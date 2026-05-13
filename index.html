@@ -39,7 +39,10 @@
     html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:var(--fundo);color:var(--texto);transition:background .3s,color .3s;}
     #app{display:flex;flex-direction:column;height:100%;max-width:480px;margin:0 auto;background:var(--fundo);}
 
-    .header{height:var(--header-h);background:linear-gradient(135deg,var(--azul),var(--azul-claro));display:flex;align-items:center;padding:0 20px;justify-content:space-between;flex-shrink:0;padding-top:env(safe-area-inset-top);}
+    .header{height:var(--header-h);background:linear-gradient(135deg,var(--azul),var(--azul-claro));display:flex;align-items:center;padding:0 20px;justify-content:space-between;flex-shrink:0;}
+    @supports(padding-top: env(safe-area-inset-top)){
+      .header{padding-top:env(safe-area-inset-top);height:calc(var(--header-h) + env(safe-area-inset-top));}
+    }
     .header-titulo{display:flex;align-items:center;gap:10px;}
     .header-logo{width:36px;height:36px;background:rgba(255,255,255,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;}
     .header-nome{font-size:20px;font-weight:700;color:white;}
