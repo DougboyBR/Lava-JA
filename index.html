@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#1256A0">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="AquaJato">
+  <link rel="manifest" href="manifest.json">
+  <title>AquaJato</title>
+  <style>
+    :root {
+      --azul:#1256A0;--azul-claro:#378ADD;--azul-bg:#E8F1FB;
+      --verde:#1D9E75;--verde-bg:#E1F5EE;
+      --amber:#BA7517;--amber-bg:#FEF3DC;
+      --vermelho:#DC2626;--vermelho-bg:#FEE2E2;
+      --roxo:#7C3AED;--roxo-bg:#EDE9FE;
+      --cinza:#6B7280;--cinza-claro:#F3F4F6;
+      --borda:#E5E7EB;--texto:#111827;--subtexto:#6B7280;
+      --fundo:#F0F4F8;--branco:#FFFFFF;
+      --nav-h:68px;--header-h:64px;
+      --radius-sm:8px;--radius-md:12px;--radius-lg:18px;
+      --sombra:0 2px 12px rgba(0,0,0,0.08);--sombra-md:0 4px 24px rgba(0,0,0,0.13);
+    }
+    body.dark{--azul-bg:#1a3a5c;--verde-bg:#0d3d2e;--amber-bg:#3d2d00;--vermelho-bg:#3d1010;--roxo-bg:#2d1f5e;--cinza-claro:#2a2a2a;--borda:#333;--texto:#F0F0F0;--subtexto:#999;--fundo:#121212;--branco:#1E1E1E;}
+    body.dark .lav-card,body.dark .vei-card,body.dark .func-card,body.dark .porte-card{background:#2a2a2a;}
+    body.dark .pag-btn,body.dark .sub-tab{background:#2a2a2a;color:var(--subtexto);}
+    body.dark .sub-tab.ativo{background:var(--azul);color:white;}
+    body.dark .btn-cinza{background:#333;color:#aaa;}
+    body.dark .btn-outline{background:transparent;}
+    body.dark .filtro-tab.ativo{background:#2a2a2a;}
+    body.dark textarea{background:#2a2a2a;color:var(--texto);border-color:var(--borda);}
+    body.dark .sugestao-item:active{background:#333;}
+    body.dark .toggle-row,body.dark .menu-item{background:#2a2a2a;}
+
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+    html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:var(--fundo);color:var(--texto);transition:background .3s,color .3s;}
+    #app{display:flex;flex-direction:column;height:100%;width:100%;background:var(--fundo);}
+
+    .header{height:var(--header-h);background:linear-gradient(135deg,var(--azul),var(--azul-claro));display:flex;align-items:center;padding:0 20px;justify-content:space-between;flex-shrink:0;}
+    @supports(padding-top: env(safe-area-inset-top)){
+      .header{padding-top:env(safe-area-inset-top);height:calc(var(--header-h) + env(safe-area-inset-top));}
+    }
+    .header-titulo{display:flex;align-items:center;gap:10px;}
+    .header-logo{width:36px;height:36px;background:rgba(255,255,255,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+    .header-nome{font-size:20px;font-weight:700;color:white;}
+    .header-sub{font-size:11px;color:rgba(255,255,255,0.75);}
+    .header-menu-btn{background:rgba(255,255,255,0.2);color:white;font-size:13px;font-weight:600;padding:6px 14px;border-radius:20px;border:none;cursor:pointer;font-family:inherit;}
+
+    .paginas-wrap{flex:1;overflow:hidden;}
+    .pagina{display:none;height:100%;overflow-y:auto;padding:16px 16px calc(var(--nav-h)+16px);-webkit-overflow-scrolling:touch;}
+    .pagina.ativa{display:block;}
+
+    .bottom-nav{height:calc(var(--nav-h) + env(safe-area-inset-bottom));background:var(--branco);border-top:1px solid var(--borda);display:flex;align-items:stretch;flex-shrink:0;padding-bottom:max(env(safe-area-inset-bottom), 16px);box-shadow:0 -2px 12px rgba(0,0,0,0.06);transition:background .3s;}
+    .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:none;background:none;cursor:pointer;transition:all .15s;padding:8px 4px;font-family:inherit;}
+    .nav-item:active{transform:scale(0.92);}
+    .nav-icone{font-size:22px;line-height:1;}
+    .nav-label{font-size:10px;font-weight:500;color:var(--subtexto);}
+    .nav-item.ativo .nav-label{color:var(--azul);font-weight:700;}
+    .nav-item.ativo .nav-icone{transform:scale(1.15);}
+
+    .card{background:var(--branco);border-radius:var(--radius-md);padding:16px;margin-bottom:12px;box-shadow:var(--sombra);transition:background .3s;}
+    .card-titulo{font-size:14px;font-weight:700;color:var(--texto);margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+
+    .hero-card{background:linear-gradient(135deg,var(--azul),var(--azul-claro));border-radius:var(--radius-lg);padding:20px;margin-bottom:14px;box-shadow:var(--sombra-md);color:white;}
+    .hero-label{font-size:12px;opacity:.8;margin-bottom:4px;}
+    .hero-valor{font-size:38px;font-weight:800;letter-spacing:-1px;}
+    .hero-sub{font-size:12px;opacity:.75;margin-top:4px;}
+    .hero-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px;}
+    .hero-stat{background:rgba(255,255,255,0.15);border-radius:var(--radius-sm);padding:10px 8px;text-align:center;}
+    .hero-stat-val{font-size:18px;font-weight:700;}
+    .hero-stat-label{font-size:10px;opacity:.8;margin-top:2px;}
+
+    .metricas-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px;}
+    .metrica-card{background:var(--branco);border-radius:var(--radius-md);padding:14px;box-shadow:var(--sombra);display:flex;flex-direction:column;gap:6px;transition:background .3s;}
+    .metrica-topo{display:flex;align-items:center;justify-content:space-between;}
+    .metrica-icone{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+    .metrica-valor{font-size:20px;font-weight:800;color:var(--texto);}
+    .metrica-label{font-size:11px;color:var(--subtexto);}
+    .ic-verde{background:var(--verde-bg);}.ic-azul{background:var(--azul-bg);}.ic-amber{background:var(--amber-bg);}.ic-verm{background:var(--vermelho-bg);}.ic-roxo{background:var(--roxo-bg);}
+
+    .badge{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;}
+    .badge-verde{background:var(--verde-bg);color:var(--verde);}
+    .badge-azul{background:var(--azul-bg);color:var(--azul);}
+    .badge-amber{background:var(--amber-bg);color:var(--amber);}
+    .badge-roxo{background:var(--roxo-bg);color:var(--roxo);}
+    .badge-cinza{background:var(--cinza-claro);color:var(--cinza);}
+
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:none;border-radius:var(--radius-sm);font-family:inherit;font-size:13px;font-weight:600;padding:10px 16px;cursor:pointer;transition:all .15s;}
+    .btn:active{transform:scale(0.97);}
+    .btn-primario{background:var(--azul);color:white;}
+    .btn-verde{background:var(--verde);color:white;}
+    .btn-wpp{background:#25D366;color:white;}
+    .btn-cinza{background:var(--cinza-claro);color:var(--cinza);}
+    .btn-verm{background:var(--vermelho);color:white;}
+    .btn-roxo{background:var(--roxo);color:white;}
+    .btn-bloco{width:100%;margin-top:8px;}
+    .btn-outline{background:transparent;color:var(--azul);border:1.5px solid var(--azul);width:100%;margin-top:8px;}
+    .btn-sm{font-size:12px;padding:7px 12px;}
+
+    .input-group{margin-bottom:12px;}
+    .input-label{font-size:12px;font-weight:600;color:var(--subtexto);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em;}
+    .input{width:100%;padding:11px 14px;border:1.5px solid var(--borda);border-radius:var(--radius-sm);font-size:16px;font-family:inherit;color:var(--texto);background:var(--branco);transition:border-color .15s,background .3s;appearance:none;-webkit-appearance:none;}
+    .input:focus{outline:none;border-color:var(--azul-claro);}
+    .input-row{display:flex;gap:10px;}.input-row .input-group{flex:1;}
+    textarea.input{resize:vertical;min-height:80px;font-size:14px;}
+
+    .busca-wrap{position:relative;}
+    .sugestoes{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--branco);border:1.5px solid var(--borda);border-radius:var(--radius-md);z-index:50;display:none;box-shadow:var(--sombra-md);overflow:hidden;}
+    .sugestao-item{padding:12px 14px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--borda);}
+    .sugestao-item:last-child{border-bottom:none;}
+    .sugestao-item:active{background:var(--cinza-claro);}
+
+    .cliente-card{background:var(--branco);border-radius:var(--radius-md);padding:12px 14px;margin-bottom:8px;box-shadow:var(--sombra);border-left:4px solid var(--azul-claro);transition:background .3s;}
+    .cliente-card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;}
+    .cliente-avatar{width:38px;height:38px;border-radius:12px;background:var(--azul-bg);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:var(--azul);flex-shrink:0;}
+    .cliente-info{flex:1;margin-left:10px;}
+    .cliente-nome{font-size:14px;font-weight:700;color:var(--texto);}
+    .cliente-sub{font-size:12px;color:var(--subtexto);margin-top:2px;}
+    .concluido-card{background:var(--branco);border-radius:var(--radius-md);padding:14px;margin-bottom:10px;box-shadow:var(--sombra);border-left:4px solid var(--verde);transition:background .3s;}
+
+    .secao-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+    .secao-titulo{font-size:13px;font-weight:700;color:var(--subtexto);text-transform:uppercase;letter-spacing:.05em;}
+    .secao-count{background:var(--azul-bg);color:var(--azul);font-size:12px;font-weight:700;padding:2px 8px;border-radius:20px;}
+
+    .barra-item{margin-bottom:10px;}
+    .barra-label{display:flex;justify-content:space-between;font-size:12px;color:var(--subtexto);margin-bottom:4px;}
+    .barra-fundo{background:var(--cinza-claro);border-radius:4px;height:8px;overflow:hidden;}
+    .barra-fill{height:100%;border-radius:4px;transition:width .5s;}
+    .barra-azul{background:var(--azul-claro);}.barra-verde{background:var(--verde);}.barra-amber{background:var(--amber);}.barra-roxo{background:var(--roxo);}
+
+    .linha-fin{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--borda);}
+    .linha-fin:last-child{border-bottom:none;}
+    .linha-fin-icone{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+    .linha-fin-info{flex:1;min-width:0;}
+    .linha-fin-nome{font-size:13px;font-weight:600;color:var(--texto);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .linha-fin-sub{font-size:11px;color:var(--subtexto);margin-top:1px;}
+    .linha-fin-val{font-size:14px;font-weight:700;white-space:nowrap;}
+
+    /* PORTE CARDS */
+    .porte-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px;}
+    .porte-card{border:2px solid var(--borda);border-radius:var(--radius-md);padding:14px 10px;text-align:center;cursor:pointer;transition:all .15s;background:var(--branco);}
+    .porte-card:active{transform:scale(0.96);}
+    .porte-card.sel{border-color:var(--azul);background:var(--azul-bg);}
+    .porte-card-icone{font-size:30px;margin-bottom:6px;}
+    .porte-card-nome{font-size:13px;font-weight:700;color:var(--texto);}
+    .porte-card-desc{font-size:11px;color:var(--subtexto);margin-top:2px;}
+
+    /* LAVAGEM CARDS */
+    .grid-lav{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px;}
+    .lav-card{border:2px solid var(--borda);border-radius:var(--radius-md);padding:14px 10px;text-align:center;cursor:pointer;transition:all .15s;background:var(--branco);}
+    .lav-card:active{transform:scale(0.96);}
+    .lav-card.sel{border-color:var(--verde);background:var(--verde-bg);}
+    .lav-icone{font-size:28px;margin-bottom:6px;}.lav-nome{font-size:13px;font-weight:700;color:var(--texto);}.lav-preco{font-size:12px;color:var(--verde);font-weight:600;margin-top:2px;}
+    .lav-sem-preco{font-size:11px;color:var(--subtexto);margin-top:2px;font-style:italic;}
+
+    /* VEÍCULO CARDS */
+    .vei-card{border:2px solid var(--borda);border-radius:var(--radius-md);padding:12px 14px;cursor:pointer;transition:all .15s;background:var(--branco);margin-bottom:8px;display:flex;align-items:center;gap:12px;}
+    .vei-card:active{transform:scale(0.98);}
+    .vei-card.sel{border-color:var(--azul);background:var(--azul-bg);}
+    .vei-card-icone{font-size:24px;}.vei-card-info{flex:1;}.vei-card-nome{font-size:14px;font-weight:700;color:var(--texto);}.vei-card-placa{font-size:12px;color:var(--subtexto);margin-top:2px;}
+    .vei-check{font-size:18px;color:var(--azul);display:none;}
+    .vei-card.sel .vei-check{display:block;}
+
+    /* FUNC CARDS */
+    .func-card{border:2px solid var(--borda);border-radius:var(--radius-md);padding:10px 14px;cursor:pointer;transition:all .15s;background:var(--branco);margin-bottom:8px;display:flex;align-items:center;gap:12px;}
+    .func-card:active{transform:scale(0.98);}
+    .func-card.sel{border-color:var(--roxo);background:var(--roxo-bg);}
+    .func-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white;flex-shrink:0;}
+    .func-info{flex:1;}.func-nome{font-size:14px;font-weight:700;color:var(--texto);}.func-sub{font-size:12px;color:var(--subtexto);margin-top:1px;}
+    .func-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--borda);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;transition:all .15s;}
+    .func-card.sel .func-check{background:var(--roxo);border-color:var(--roxo);color:white;}
+
+    /* RANKING */
+    .ranking-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--borda);}
+    .ranking-item:last-child{border-bottom:none;}
+    .ranking-pos{font-size:16px;font-weight:800;color:var(--subtexto);width:28px;text-align:center;flex-shrink:0;}
+    .ranking-pos.top1{color:#F59E0B;}.ranking-pos.top2{color:#9CA3AF;}.ranking-pos.top3{color:#B45309;}
+    .ranking-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white;flex-shrink:0;}
+    .ranking-info{flex:1;}.ranking-nome{font-size:14px;font-weight:700;color:var(--texto);}.ranking-sub{font-size:12px;color:var(--subtexto);margin-top:2px;}
+    .ranking-right{text-align:right;}.ranking-qtd{font-size:18px;font-weight:800;color:var(--azul);}.ranking-comissao{font-size:11px;color:var(--verde);font-weight:600;margin-top:1px;}
+
+    /* PREÇOS POR PORTE no cadastro */
+    .preco-porte-grid{display:flex;flex-direction:column;gap:8px;margin-top:8px;}
+    .preco-porte-item{display:flex;align-items:center;gap:10px;background:var(--cinza-claro);border-radius:8px;padding:8px 12px;}
+    .preco-porte-icone{font-size:20px;flex-shrink:0;}
+    .preco-porte-nome{font-size:13px;font-weight:600;color:var(--texto);flex:1;}
+    .preco-porte-input{width:90px;border:1.5px solid var(--borda);border-radius:6px;padding:6px 10px;font-size:14px;font-family:inherit;color:var(--texto);background:var(--branco);text-align:right;}
+    .preco-porte-input:focus{outline:none;border-color:var(--azul);}
+
+    .lista-item{display:flex;align-items:flex-start;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--borda);}
+    .lista-item:last-child{border-bottom:none;}
+    .lista-item-info{flex:1;}.lista-item-nome{font-size:14px;font-weight:600;color:var(--texto);}.lista-item-sub{font-size:12px;color:var(--subtexto);margin-top:2px;}
+    .lista-item-acoes{display:flex;gap:6px;margin-left:8px;}
+    .lista-item-btn{width:32px;height:32px;border-radius:8px;border:none;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+    .btn-edit{background:var(--azul-bg);color:var(--azul);}.btn-del{background:var(--vermelho-bg);color:var(--vermelho);}
+
+    .filtro-tabs{display:flex;background:var(--cinza-claro);border-radius:var(--radius-sm);padding:3px;margin-bottom:14px;}
+    .filtro-tab{flex:1;text-align:center;padding:7px;border-radius:6px;border:none;background:none;font-size:12px;font-weight:600;color:var(--subtexto);cursor:pointer;font-family:inherit;transition:all .15s;}
+    .filtro-tab.ativo{background:var(--branco);color:var(--azul);box-shadow:var(--sombra);}
+
+    .hist-item{background:var(--branco);border-radius:var(--radius-md);padding:14px;margin-bottom:10px;box-shadow:var(--sombra);display:flex;gap:12px;align-items:flex-start;transition:background .3s;}
+    .hist-avatar{width:40px;height:40px;border-radius:12px;background:var(--verde-bg);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+    .hist-info{flex:1;min-width:0;}.hist-nome{font-size:14px;font-weight:700;color:var(--texto);}.hist-sub{font-size:12px;color:var(--subtexto);margin-top:3px;}
+    .hist-data-badge{font-size:11px;font-weight:600;color:white;background:var(--azul);padding:3px 8px;border-radius:20px;white-space:nowrap;}
+
+    .empty{text-align:center;padding:40px 20px;background:var(--branco);border-radius:var(--radius-md);box-shadow:var(--sombra);transition:background .3s;}
+    .empty-icone{font-size:40px;margin-bottom:10px;}.empty-titulo{font-size:15px;font-weight:700;color:var(--texto);margin-bottom:6px;}.empty-sub{font-size:13px;color:var(--subtexto);}
+
+    .sub-tabs{display:flex;gap:6px;margin-bottom:16px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;}
+    .sub-tabs::-webkit-scrollbar{display:none;}
+    .sub-tab{padding:7px 14px;border-radius:20px;border:1.5px solid var(--borda);background:var(--branco);font-size:13px;font-weight:600;cursor:pointer;color:var(--subtexto);white-space:nowrap;font-family:inherit;transition:all .15s;flex-shrink:0;}
+    .sub-tab.ativo{background:var(--azul);color:white;border-color:var(--azul);}
+    .sub-pag{display:none;}.sub-pag.ativa{display:block;}
+
+    .pag-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
+    .pag-btn{padding:10px 16px;border:2px solid var(--borda);border-radius:var(--radius-sm);background:var(--branco);font-size:14px;cursor:pointer;font-family:inherit;font-weight:600;transition:all .15s;color:var(--texto);}
+    .pag-btn.sel{border-color:var(--verde);background:var(--verde-bg);color:var(--verde);}
+
+    .aviso{padding:12px 14px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;margin-bottom:12px;display:none;}
+    .aviso-ok{background:var(--verde-bg);color:#065F46;}.aviso-erro{background:var(--vermelho-bg);color:#991B1B;}
+
+    .modal-fundo{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:flex-end;justify-content:center;backdrop-filter:blur(3px);touch-action:none;}
+    .modal-fundo.aberto{display:flex;}
+    .modal-fundo .modal{touch-action:pan-y;}
+    .modal{background:var(--branco);border-radius:var(--radius-lg) var(--radius-lg) 0 0;padding:20px 20px calc(20px + env(safe-area-inset-bottom));width:100%;max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;box-shadow:0 -8px 40px rgba(0,0,0,0.2);animation:slideUp .25s ease;transition:background .3s;}
+    @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+    .modal-handle{width:36px;height:4px;border-radius:2px;background:var(--borda);margin:0 auto 16px;}
+    .modal-titulo{font-size:17px;font-weight:700;color:var(--texto);margin-bottom:6px;}
+    .modal-sub{font-size:13px;color:var(--subtexto);margin-bottom:16px;}
+    .modal-botoes{display:flex;flex-direction:column;gap:8px;}
+    .dado-linha{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--borda);font-size:13px;}
+    .dado-linha:last-child{border-bottom:none;}
+    .dado-chave{color:var(--subtexto);}.dado-valor{font-weight:700;color:var(--texto);}
+    .divider{border:none;border-top:1px solid var(--borda);margin:12px 0;}
+
+    .menu-secao{font-size:11px;font-weight:700;color:var(--subtexto);text-transform:uppercase;letter-spacing:.05em;margin:14px 0 6px;}
+    .menu-item{display:flex;align-items:center;gap:14px;padding:12px 14px;background:var(--cinza-claro);border-radius:var(--radius-sm);cursor:pointer;border:none;width:100%;font-family:inherit;text-align:left;margin-bottom:8px;transition:all .15s;}
+    .menu-item:active{transform:scale(0.98);}
+    .menu-item-icone{font-size:22px;flex-shrink:0;}
+    .menu-item-info{flex:1;}
+    .menu-item-titulo{font-size:13px;font-weight:700;color:var(--texto);}
+    .menu-item-sub{font-size:11px;color:var(--subtexto);margin-top:2px;}
+
+    .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--cinza-claro);border-radius:var(--radius-sm);margin-bottom:8px;}
+    .toggle-label{font-size:13px;font-weight:700;color:var(--texto);}
+    .toggle-sub{font-size:11px;color:var(--subtexto);margin-top:2px;}
+    .toggle{position:relative;width:44px;height:24px;flex-shrink:0;}
+    .toggle input{opacity:0;width:0;height:0;}
+    .toggle-slider{position:absolute;inset:0;background:var(--borda);border-radius:24px;transition:.3s;cursor:pointer;}
+    .toggle-slider:before{content:'';position:absolute;height:18px;width:18px;left:3px;bottom:3px;background:white;border-radius:50%;transition:.3s;}
+    input:checked+.toggle-slider{background:var(--azul);}
+    input:checked+.toggle-slider:before{transform:translateX(20px);}
+
+    .comissao-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:8px;}
+    .comissao-item{background:var(--cinza-claro);border-radius:8px;padding:8px 10px;display:flex;align-items:center;gap:8px;}
+    .comissao-icone{font-size:18px;flex-shrink:0;}
+    .comissao-info{flex:1;min-width:0;}
+    .comissao-nome{font-size:12px;font-weight:600;color:var(--texto);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .comissao-input{width:100%;border:1px solid var(--borda);border-radius:6px;padding:4px 8px;font-size:13px;font-family:inherit;color:var(--texto);background:var(--branco);margin-top:4px;}
+    .comissao-input:focus{outline:none;border-color:var(--azul);}
+
+    .save-indicator{position:fixed;bottom:calc(var(--nav-h)+10px);left:50%;transform:translateX(-50%);background:#111;color:white;font-size:12px;font-weight:600;padding:6px 16px;border-radius:20px;z-index:300;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;}
+    .save-indicator.show{opacity:1;}
+    @media(min-width:600px){
+      .hero-grid{grid-template-columns:repeat(3,1fr);}
+      .metricas-grid{grid-template-columns:repeat(4,1fr);}
+      .grid-lav{grid-template-columns:repeat(3,1fr);}
+      .porte-grid{grid-template-columns:repeat(3,1fr);}
+      .pagina{padding:20px 24px calc(var(--nav-h)+20px);}
+    }
+    @media(min-width:900px){
+      .metricas-grid{grid-template-columns:repeat(4,1fr);}
+      .grid-lav{grid-template-columns:repeat(4,1fr);}
+      :root{--nav-h:72px;--header-h:68px;}
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+  <div class="save-indicator" id="save-ind">💾 Dados salvos</div>
+
+  <!-- MODAL: Verificação de cliente -->
+  <div class="modal-fundo" id="modal-veri">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-titulo">🔍 Confirme o cliente</div>
+      <div class="modal-sub">Selecione o veículo para esta lavagem</div>
+      <div style="background:var(--cinza-claro);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:14px;">
+        <div class="dado-linha"><span class="dado-chave">Nome</span><span class="dado-valor" id="mv-nome"></span></div>
+        <div class="dado-linha"><span class="dado-chave">Telefone</span><span class="dado-valor" id="mv-tel"></span></div>
+      </div>
+      <div style="font-size:12px;font-weight:700;color:var(--subtexto);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Selecione o veículo</div>
+      <div id="mv-veiculos"></div>
+      <button class="btn btn-verde btn-bloco" id="btn-vei-ok" onclick="abrirModalPorte()" disabled style="opacity:.45;">Confirmar veículo</button>
+      <button class="btn btn-outline btn-bloco" onclick="irEditarCliente()" style="margin-top:8px;">🚗 Adicionar veículo a este cliente</button>
+      <button class="btn btn-verm btn-bloco" onclick="fecharVeri()">✕ Cancelar</button>
+    </div>
+  </div>
+
+  <!-- MODAL: Selecionar porte -->
+  <div class="modal-fundo" id="modal-porte">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-titulo">📐 Porte do veículo</div>
+      <div class="modal-sub">Qual o porte de <strong id="mp-vei"></strong>?</div>
+      <div class="porte-grid" id="grid-portes">
+        <div class="porte-card" onclick="selecionarPorte(this,'moto')">
+          <div class="porte-card-icone">🏍️</div>
+          <div class="porte-card-nome">Moto</div>
+          <div class="porte-card-desc">Motocicletas</div>
+        </div>
+        <div class="porte-card" onclick="selecionarPorte(this,'pequeno')">
+          <div class="porte-card-icone">🚗</div>
+          <div class="porte-card-nome">Pequeno</div>
+          <div class="porte-card-desc">Hatch, Sedan pequeno</div>
+        </div>
+        <div class="porte-card" onclick="selecionarPorte(this,'medio')">
+          <div class="porte-card-icone">🚙</div>
+          <div class="porte-card-nome">Médio</div>
+          <div class="porte-card-desc">Sedan, SW</div>
+        </div>
+        <div class="porte-card" onclick="selecionarPorte(this,'grande')">
+          <div class="porte-card-icone">🛻</div>
+          <div class="porte-card-nome">Grande</div>
+          <div class="porte-card-desc">SUV, Pickup</div>
+        </div>
+        <div class="porte-card" onclick="selecionarPorte(this,'carga')" style="grid-column:span 2;">
+          <div class="porte-card-icone">🚛</div>
+          <div class="porte-card-nome">Carga</div>
+          <div class="porte-card-desc">Caminhão, Van, Ônibus</div>
+        </div>
+      </div>
+      <button class="btn btn-verde btn-bloco" id="btn-porte-ok" onclick="abrirModalLavagem()" disabled style="opacity:.45;">Ver lavagens disponíveis</button>
+      <button class="btn btn-verm btn-bloco" onclick="fecharModalPorte()">✕ Cancelar</button>
+    </div>
+  </div>
+
+  <!-- MODAL: Escolher lavagem -->
+  <div class="modal-fundo" id="modal-lav">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-titulo">🧼 Escolher lavagem</div>
+      <div class="modal-sub">Para <strong id="ml-cli"></strong> <span id="ml-porte-badge"></span></div>
+      <div class="grid-lav" id="grid-lavs"></div>
+      <button class="btn btn-verde btn-bloco" id="btn-lav-ok" onclick="abrirModalFuncionarios(false)" disabled style="opacity:.45;">Próximo: Funcionários</button>
+      <button class="btn btn-verm btn-bloco" onclick="fecharModalLav()">✕ Cancelar</button>
+    </div>
+  </div>
+
+  <!-- MODAL: Funcionários -->
+  <div class="modal-fundo" id="modal-func">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-titulo" id="mf-titulo">👷 Selecionar funcionários</div>
+      <div class="modal-sub">Toque para marcar/desmarcar. Pode selecionar mais de um.</div>
+      <div id="mf-lista"></div>
+      <div id="mf-sel" style="font-size:12px;color:var(--roxo);font-weight:600;margin-bottom:12px;min-height:18px;"></div>
+      <button class="btn btn-roxo btn-bloco" onclick="confirmarFuncionarios()">Confirmar</button>
+      <button class="btn btn-outline btn-bloco" onclick="confirmarSemFunc()" id="btn-sem-func">Iniciar sem atribuir</button>
+      <button class="btn btn-verm btn-bloco" onclick="fecharModalFunc()">✕ Cancelar</button>
+    </div>
+  </div>
+
+  <!-- MODAL: Editar item da fila -->
+  <div class="modal-fundo" id="modal-editar">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-titulo">✏️ Editar lavagem</div>
+      <div class="modal-sub">O que deseja alterar em <strong id="me-cli"></strong>?</div>
+      <div class="modal-botoes">
+        <button class="btn btn-primario btn-bloco" onclick="editarLavagem()">🧼 Mudar lavagem</button>
+        <button class="btn btn-roxo btn-bloco"     onclick="editarFuncionarios()">👷 Mudar funcionários</button>
+        <button class="btn btn-verm btn-bloco"     onclick="fecharEditar()">✕ Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Conclusão -->
+  <div class="modal-fundo" id="modal-conc">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-titulo">✅ Concluir lavagem</div>
+      <div class="modal-sub">Forma de pagamento de <strong id="mc-cli"></strong>:</div>
+      <div class="pag-grid" id="pag-grid"></div>
+      <button class="btn btn-verde btn-bloco" id="btn-conc-ok" onclick="confirmarConclusao()" disabled style="opacity:.45;">Confirmar conclusão</button>
+      <button class="btn btn-verm btn-bloco" onclick="fecharModalConc()">✕ Cancelar</button>
+    </div>
+  </div>
+
+  <!-- MODAL: Duplicata -->
+  <div class="modal-fundo" id="modal-dup">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-titulo">👤 Cliente já cadastrado</div>
+      <div class="modal-sub" id="dup-texto"></div>
+      <div class="modal-botoes">
+        <button class="btn btn-verde btn-bloco"   onclick="respostaModal('novo')">🚗 Adicionar novo veículo</button>
+        <button class="btn btn-primario btn-bloco" onclick="respostaModal('mesmo')">✅ Ir para lavagem</button>
+        <button class="btn btn-verm btn-bloco"    onclick="fecharDup()">✕ Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Menu -->
+  <div class="modal-fundo" id="modal-menu">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-titulo">☰ Menu</div>
+      <div class="modal-sub">Ferramentas e configurações</div>
+      <div class="menu-secao">🎨 Aparência</div>
+      <div class="toggle-row">
+        <div><div class="toggle-label">🌙 Modo escuro</div><div class="toggle-sub">Reduz o brilho à noite</div></div>
+        <label class="toggle"><input type="checkbox" id="toggle-dark" onchange="alternarDark(this.checked)"><span class="toggle-slider"></span></label>
+      </div>
+      <div class="menu-secao">💬 WhatsApp</div>
+      <button class="menu-item" onclick="fecharMenu();abrirMsgWpp()">
+        <span class="menu-item-icone">✏️</span>
+        <div class="menu-item-info"><div class="menu-item-titulo">Personalizar mensagens</div><div class="menu-item-sub">Edite os textos enviados ao cliente</div></div>
+        <span style="color:var(--subtexto);">›</span>
+      </button>
+      <div class="menu-secao">📤 Exportar</div>
+      <button class="menu-item" onclick="exportarPDF()"><span class="menu-item-icone">📄</span><div class="menu-item-info"><div class="menu-item-titulo">Relatório financeiro do dia</div><div class="menu-item-sub">PDF com serviços, portes e comissões</div></div></button>
+      <button class="menu-item" onclick="exportarCSV()"><span class="menu-item-icone">📊</span><div class="menu-item-info"><div class="menu-item-titulo">Histórico para Excel</div><div class="menu-item-sub">Arquivo .csv</div></div></button>
+      <div class="menu-secao">⚙️ Dados</div>
+      <button class="menu-item" onclick="exportarBackup()"><span class="menu-item-icone">💾</span><div class="menu-item-info"><div class="menu-item-titulo">Fazer backup</div><div class="menu-item-sub">Baixa todos os cadastros</div></div></button>
+      <button class="menu-item" onclick="importarBackup()"><span class="menu-item-icone">📥</span><div class="menu-item-info"><div class="menu-item-titulo">Restaurar backup</div><div class="menu-item-sub">Importa backup anterior</div></div></button>
+      <input type="file" id="input-backup" accept=".json" style="display:none;" onchange="processarBackup(event)">
+      <div class="menu-secao">⚠️ Resetar</div>
+      <button class="menu-item" style="background:var(--vermelho-bg);" onclick="resetarDia()"><span class="menu-item-icone">🔄</span><div class="menu-item-info"><div class="menu-item-titulo" style="color:var(--vermelho);">Zerar fila do dia</div><div class="menu-item-sub" style="color:var(--vermelho);">Histórico mantido</div></div></button>
+      <button class="btn btn-verm btn-bloco" onclick="fecharMenu()" style="margin-top:6px;">✕ Fechar</button>
+    </div>
+  </div>
+
+  <!-- MODAL: Mensagens WhatsApp -->
+  <div class="modal-fundo" id="modal-wpp">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-titulo">💬 Mensagens WhatsApp</div>
+      <div class="modal-sub">Use <strong>{nome}</strong>, <strong>{veiculo}</strong> e <strong>{servico}</strong>.</div>
+      <div class="input-group"><label class="input-label">✅ Concluído</label><textarea class="input" id="msg-pronto" rows="3"></textarea></div>
+      <div class="input-group"><label class="input-label">⏳ Agendado</label><textarea class="input" id="msg-agendado" rows="3"></textarea></div>
+      <div class="input-group"><label class="input-label">🚿 Em lavagem</label><textarea class="input" id="msg-lavando" rows="3"></textarea></div>
+      <button class="btn btn-verde btn-bloco" onclick="salvarMsgWpp()">💾 Salvar</button>
+      <button class="btn btn-verm btn-bloco" onclick="fecharMsgWpp()">✕ Cancelar</button>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-titulo">
+      <div class="header-logo">🚗</div>
+      <div><div class="header-nome">AquaJato</div><div class="header-sub">Painel do lava jato</div></div>
+    </div>
+    <button class="header-menu-btn" onclick="abrirMenu()">☰ Menu</button>
+  </div>
+
+  <div class="paginas-wrap">
+
+    <!-- ABA: Lavagem -->
+    <div class="pagina ativa" id="pag-lavagem">
+      <div class="aviso aviso-ok" id="av-lav"></div>
+      <div class="aviso aviso-erro" id="er-lav"></div>
+      <div class="hero-card">
+        <div class="hero-label">Serviços concluídos hoje</div>
+        <div class="hero-valor" id="hero-total">0</div>
+        <div class="hero-sub">Acompanhe a fila abaixo</div>
+        <div class="hero-grid">
+          <div class="hero-stat"><div class="hero-stat-val" id="hero-agu">0</div><div class="hero-stat-label">Aguardando</div></div>
+          <div class="hero-stat"><div class="hero-stat-val" id="hero-lav">0</div><div class="hero-stat-label">Em lavagem</div></div>
+          <div class="hero-stat"><div class="hero-stat-val" id="hero-prt">0</div><div class="hero-stat-label">Prontos</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-titulo">🔍 Buscar cliente</div>
+        <div class="busca-wrap">
+          <input class="input" id="busca-lav" type="text" placeholder="Nome do cliente..." onkeyup="buscarLav()" autocomplete="off">
+          <div class="sugestoes" id="sug-lav"></div>
+        </div>
+      </div>
+      <div>
+        <div class="secao-header"><span class="secao-titulo">⏳ Aguardando</span><span class="secao-count" id="cnt-agu">0</span></div>
+        <div id="lista-agu"></div>
+      </div>
+      <div style="margin-top:6px;">
+        <div class="secao-header"><span class="secao-titulo">🚿 Em lavagem</span><span class="secao-count" id="cnt-lav">0</span></div>
+        <div id="lista-lav"></div>
+      </div>
+      <div id="sec-conc" style="display:none;margin-top:6px;">
+        <div class="secao-header"><span class="secao-titulo">✅ Concluídos hoje</span><span class="secao-count" id="cnt-conc">0</span></div>
+        <div id="lista-conc"></div>
+      </div>
+    </div>
+
+    <!-- ABA: Financeiro -->
+    <div class="pagina" id="pag-financeiro">
+      <div class="metricas-grid">
+        <div class="metrica-card"><div class="metrica-topo"><div class="metrica-icone ic-verde">💰</div></div><div class="metrica-valor" id="fin-rec">R$ 0</div><div class="metrica-label">Receita hoje</div></div>
+        <div class="metrica-card"><div class="metrica-topo"><div class="metrica-icone ic-azul">🚗</div></div><div class="metrica-valor" id="fin-qtd">0</div><div class="metrica-label">Serviços</div></div>
+        <div class="metrica-card"><div class="metrica-topo"><div class="metrica-icone ic-amber">📊</div></div><div class="metrica-valor" id="fin-tkt">R$ 0</div><div class="metrica-label">Ticket médio</div></div>
+        <div class="metrica-card"><div class="metrica-topo"><div class="metrica-icone ic-verm">💸</div></div><div class="metrica-valor" id="fin-desp">R$ 0</div><div class="metrica-label">Despesas</div></div>
+      </div>
+      <div class="card"><div class="card-titulo">📐 Por porte de veículo</div><div id="graf-porte"></div></div>
+      <div class="card"><div class="card-titulo">👷 Ranking + Comissões</div><div id="ranking-func"></div></div>
+      <div class="card"><div class="card-titulo">📊 Por serviço</div><div id="graf-serv"></div></div>
+      <div class="card"><div class="card-titulo">💳 Por pagamento</div><div id="graf-pag"></div></div>
+      <div class="card"><div class="card-titulo">📋 Lançamentos</div><div id="lista-lanc"></div></div>
+      <div class="card">
+        <div class="card-titulo">➕ Registrar despesa</div>
+        <div class="input-group"><label class="input-label">Descrição</label><input class="input" id="d-desc" type="text" placeholder="Ex: Produto de limpeza"></div>
+        <div class="input-row">
+          <div class="input-group"><label class="input-label">Valor (R$)</label><input class="input" id="d-val" type="number" placeholder="0,00"></div>
+          <div class="input-group"><label class="input-label">Categoria</label><select class="input" id="d-cat"><option>Produto</option><option>Equipamento</option><option>Outros</option></select></div>
+        </div>
+        <button class="btn btn-verm btn-bloco" onclick="regDespesa()">Registrar despesa</button>
+      </div>
+    </div>
+
+    <!-- ABA: Cadastros -->
+    <div class="pagina" id="pag-cadastros">
+      <div class="sub-tabs">
+        <button class="sub-tab ativo" onclick="mudarSub('cli',this)">👤 Clientes</button>
+        <button class="sub-tab"       onclick="mudarSub('func',this)">👷 Funcionários</button>
+        <button class="sub-tab"       onclick="mudarSub('lav',this)">🧼 Lavagens</button>
+        <button class="sub-tab"       onclick="mudarSub('pag',this)">💳 Pagamentos</button>
+      </div>
+
+      <!-- SUB: Clientes -->
+      <div class="sub-pag ativa" id="sub-cli">
+        <div class="aviso aviso-ok" id="av-cad"></div><div class="aviso aviso-erro" id="er-cad"></div>
+        <div class="card">
+          <div class="card-titulo" id="tit-cli">Novo cliente</div>
+          <div class="input-group"><label class="input-label">Nome</label>
+            <div class="busca-wrap"><input class="input" id="c-nome" type="text" placeholder="Nome completo" onkeyup="buscarCad()" autocomplete="off"><div class="sugestoes" id="sug-cad"></div></div>
+          </div>
+          <div class="input-group"><label class="input-label">Telefone (WhatsApp)</label><input class="input" id="c-tel" type="tel" placeholder="85999990000"></div>
+          <hr class="divider">
+          <div style="font-size:13px;font-weight:700;color:var(--texto);margin-bottom:10px;">🚗 Veículos</div>
+          <div id="vei-form"></div>
+          <div style="background:var(--cinza-claro);border-radius:var(--radius-sm);padding:12px;margin-bottom:12px;">
+            <div style="font-size:12px;font-weight:600;color:var(--subtexto);margin-bottom:8px;">Adicionar veículo</div>
+            <div class="input-row">
+              <div class="input-group" style="margin-bottom:0;"><input class="input" id="v-mod" type="text" placeholder="Modelo" style="font-size:14px;"></div>
+              <div class="input-group" style="margin-bottom:0;max-width:120px;"><input class="input" id="v-pla" type="text" placeholder="Placa" style="font-size:14px;"></div>
+            </div>
+            <div class="input-row" style="margin-top:8px;">
+              <div class="input-group" style="margin-bottom:0;"><select class="input" id="v-tipo" style="font-size:14px;"><option value="🚗">🚗 Carro</option><option value="🏍️">🏍️ Moto</option><option value="🚐">🚐 Van</option><option value="🚚">🚚 Caminhão</option></select></div>
+              <div style="flex-shrink:0;"><button class="btn btn-primario btn-sm" onclick="addVei()" style="height:44px;">+ Adicionar</button></div>
+            </div>
+          </div>
+          <button class="btn btn-verde btn-bloco" id="btn-salvar-cli" onclick="salvarCliente()">Cadastrar cliente</button>
+          <button class="btn btn-verm btn-bloco" id="btn-cancel-cli" onclick="cancelarCli()" style="display:none;">✕ Cancelar edição</button>
+        </div>
+        <div class="card"><div class="card-titulo">👥 Clientes cadastrados</div><div id="lista-clis"></div></div>
+      </div>
+
+      <!-- SUB: Funcionários -->
+      <div class="sub-pag" id="sub-func">
+        <div class="aviso aviso-ok" id="av-func"></div><div class="aviso aviso-erro" id="er-func"></div>
+        <div class="card">
+          <div class="card-titulo" id="tit-func">Novo funcionário</div>
+          <div class="input-group"><label class="input-label">Nome completo</label><input class="input" id="fn-nome" type="text" placeholder="Ex: João Silva"></div>
+          <div class="input-row">
+            <div class="input-group"><label class="input-label">Cargo</label><input class="input" id="fn-cargo" type="text" placeholder="Ex: Lavador"></div>
+            <div class="input-group"><label class="input-label">Telefone</label><input class="input" id="fn-tel" type="tel" placeholder="85999990000"></div>
+          </div>
+          <div class="toggle-row" style="margin-bottom:12px;">
+            <div><div class="toggle-label">💰 Comissão por serviço</div><div class="toggle-sub">Ative para definir valor por lavagem</div></div>
+            <label class="toggle"><input type="checkbox" id="fn-usa-com" onchange="toggleComissao(this.checked)"><span class="toggle-slider"></span></label>
+          </div>
+          <div id="fn-com-wrap" style="display:none;">
+            <div style="font-size:12px;font-weight:700;color:var(--subtexto);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;">Valor por lavagem (R$)</div>
+            <div class="comissao-grid" id="fn-com-grid"></div>
+          </div>
+          <button class="btn btn-roxo btn-bloco" id="btn-salvar-func" onclick="salvarFuncionario()">Cadastrar funcionário</button>
+          <button class="btn btn-verm btn-bloco" id="btn-cancel-func" onclick="cancelarFunc()" style="display:none;">✕ Cancelar edição</button>
+        </div>
+        <div class="card"><div class="card-titulo">👷 Funcionários cadastrados</div><div id="lista-funcs"></div></div>
+      </div>
+
+      <!-- SUB: Lavagens — com preços por porte -->
+      <div class="sub-pag" id="sub-lav">
+        <div class="aviso aviso-ok" id="av-lc"></div><div class="aviso aviso-erro" id="er-lc"></div>
+        <div class="card">
+          <div class="card-titulo" id="tit-lav">Nova lavagem</div>
+          <div class="input-group"><label class="input-label">Nome do serviço</label><input class="input" id="l-nome" type="text" placeholder="Ex: Lavagem Completa"></div>
+          <div class="input-row">
+            <div class="input-group"><label class="input-label">Ícone</label><input class="input" id="l-icone" type="text" placeholder="🚗" maxlength="2"></div>
+          </div>
+          <hr class="divider">
+          <div style="font-size:13px;font-weight:700;color:var(--texto);margin-bottom:4px;">💰 Preço por porte</div>
+          <div style="font-size:12px;color:var(--subtexto);margin-bottom:12px;">Deixe 0 se não atende este porte</div>
+          <div class="preco-porte-grid" id="preco-porte-form">
+            <div class="preco-porte-item"><span class="preco-porte-icone">🏍️</span><span class="preco-porte-nome">Moto</span><input class="preco-porte-input" type="number" id="pp-moto" placeholder="0"></div>
+            <div class="preco-porte-item"><span class="preco-porte-icone">🚗</span><span class="preco-porte-nome">Pequeno</span><input class="preco-porte-input" type="number" id="pp-pequeno" placeholder="0"></div>
+            <div class="preco-porte-item"><span class="preco-porte-icone">🚙</span><span class="preco-porte-nome">Médio</span><input class="preco-porte-input" type="number" id="pp-medio" placeholder="0"></div>
+            <div class="preco-porte-item"><span class="preco-porte-icone">🛻</span><span class="preco-porte-nome">Grande</span><input class="preco-porte-input" type="number" id="pp-grande" placeholder="0"></div>
+            <div class="preco-porte-item"><span class="preco-porte-icone">🚛</span><span class="preco-porte-nome">Carga</span><input class="preco-porte-input" type="number" id="pp-carga" placeholder="0"></div>
+          </div>
+          <button class="btn btn-verde btn-bloco" id="btn-salvar-lav" onclick="salvarLavagem()">Cadastrar lavagem</button>
+          <button class="btn btn-verm btn-bloco" id="btn-cancel-lav" onclick="cancelarLav()" style="display:none;">✕ Cancelar edição</button>
+        </div>
+        <div class="card"><div class="card-titulo">🧼 Lavagens cadastradas</div><div id="lista-lavs"></div></div>
+      </div>
+
+      <!-- SUB: Pagamentos -->
+      <div class="sub-pag" id="sub-pag">
+        <div class="aviso aviso-ok" id="av-pc"></div><div class="aviso aviso-erro" id="er-pc"></div>
+        <div class="card">
+          <div class="card-titulo" id="tit-pag">Nova forma de pagamento</div>
+          <div class="input-row">
+            <div class="input-group"><label class="input-label">Nome</label><input class="input" id="p-nome" type="text" placeholder="Ex: Pix"></div>
+            <div class="input-group"><label class="input-label">Ícone</label><input class="input" id="p-icone" type="text" placeholder="📱" maxlength="2"></div>
+          </div>
+          <button class="btn btn-verde btn-bloco" id="btn-salvar-pag" onclick="salvarPagamento()">Cadastrar pagamento</button>
+          <button class="btn btn-verm btn-bloco" id="btn-cancel-pag" onclick="cancelarPag()" style="display:none;">✕ Cancelar edição</button>
+        </div>
+        <div class="card"><div class="card-titulo">💳 Formas cadastradas</div><div id="lista-pags"></div></div>
+      </div>
+    </div>
+
+    <!-- ABA: Histórico -->
+    <div class="pagina" id="pag-historico">
+      <div class="card">
+        <div class="filtro-tabs">
+          <button class="filtro-tab ativo" onclick="trocarFiltro(this,'data')">📅 Data</button>
+          <button class="filtro-tab"       onclick="trocarFiltro(this,'nome')">👤 Nome</button>
+          <button class="filtro-tab"       onclick="trocarFiltro(this,'func')">👷 Funcionário</button>
+          <button class="filtro-tab"       onclick="trocarFiltro(this,'porte')">📐 Porte</button>
+        </div>
+        <div id="fw-data"><div class="input-group"><label class="input-label">Data</label><input class="input" type="date" id="f-data" onchange="renderHist()"></div></div>
+        <div id="fw-nome" style="display:none;"><div class="input-group"><label class="input-label">Nome</label><input class="input" type="text" id="f-nome" placeholder="Digite o nome..." onkeyup="renderHist()"></div></div>
+        <div id="fw-func" style="display:none;"><div class="input-group"><label class="input-label">Funcionário</label><select class="input" id="f-func" onchange="renderHist()"><option value="">Todos</option></select></div></div>
+        <div id="fw-porte" style="display:none;"><div class="input-group"><label class="input-label">Porte</label><select class="input" id="f-porte" onchange="renderHist()"><option value="">Todos</option><option value="moto">🏍️ Moto</option><option value="pequeno">🚗 Pequeno</option><option value="medio">🚙 Médio</option><option value="grande">🛻 Grande</option><option value="carga">🚛 Carga</option></select></div></div>
+      </div>
+      <div id="lista-hist"></div>
+    </div>
+
+  </div>
+
+  <nav class="bottom-nav">
+    <button class="nav-item ativo" onclick="mudarPag('lavagem',this)"><span class="nav-icone">🚿</span><span class="nav-label">Lavagem</span></button>
+    <button class="nav-item"       onclick="mudarPag('financeiro',this)"><span class="nav-icone">💰</span><span class="nav-label">Financeiro</span></button>
+    <button class="nav-item"       onclick="mudarPag('cadastros',this)"><span class="nav-icone">📋</span><span class="nav-label">Cadastros</span></button>
+    <button class="nav-item"       onclick="mudarPag('historico',this)"><span class="nav-icone">🕐</span><span class="nav-label">Histórico</span></button>
+  </nav>
+
+</div>
+<script>
+// ══ STORAGE ══
+function salvar(k,v){try{localStorage.setItem('aqj_'+k,JSON.stringify(v));showSave();}catch(e){}}
+function carregar(k,p){try{var i=localStorage.getItem('aqj_'+k);return i?JSON.parse(i):p;}catch(e){return p;}}
+var _st=null;
+function showSave(){var e=document.getElementById('save-ind');e.classList.add('show');clearTimeout(_st);_st=setTimeout(function(){e.classList.remove('show');},2000);}
+
+// ══ PORTES ══
+var PORTES={
+  moto:    {label:'Moto',    icone:'🏍️'},
+  pequeno: {label:'Pequeno', icone:'🚗'},
+  medio:   {label:'Médio',   icone:'🚙'},
+  grande:  {label:'Grande',  icone:'🛻'},
+  carga:   {label:'Carga',   icone:'🚛'}
+};
+
+// ══ DADOS ══
+var hoje=new Date();
+var ISO=hoje.getFullYear()+'-'+String(hoje.getMonth()+1).padStart(2,'0')+'-'+String(hoje.getDate()).padStart(2,'0');
+var FMT=String(hoje.getDate()).padStart(2,'0')+'/'+String(hoje.getMonth()+1).padStart(2,'0')+'/'+hoje.getFullYear();
+
+(function(){var u=carregar('ultimo_dia','');if(u!==ISO){salvar('fila',[]);salvar('concluidos',[]);salvar('lancamentos',[]);salvar('total_hoje',0);salvar('ultimo_dia',ISO);}})();
+
+var clientes=carregar('clientes',[
+  {nome:'Carlos Lima', tel:'85999990001',veiculos:[{modelo:'Civic 2022',placa:'ERT-5821',tipo:'🚗'}]},
+  {nome:'Ana Ferreira',tel:'85999990002',veiculos:[{modelo:'Kwid 2021', placa:'BNM-2934',tipo:'🚗'}]},
+  {nome:'Ricardo Melo',tel:'85999990003',veiculos:[{modelo:'Hilux 2020',placa:'PLK-8811',tipo:'🚗'},{modelo:'Honda Fan 150',placa:'XYZ-0001',tipo:'🏍️'}]}
+]);
+var funcionarios=carregar('funcionarios',[
+  {nome:'João Silva',  cargo:'Lavador', tel:'',usaComissao:false,comissoes:{}},
+  {nome:'Maria Souza', cargo:'Lavadora',tel:'',usaComissao:false,comissoes:{}}
+]);
+// lavagens: cada serviço tem preços por porte: {moto, pequeno, medio, grande, carga}
+var lavagens=carregar('lavagens',[
+  {nome:'Simples',      icone:'🚿',precos:{moto:20,pequeno:30,medio:35,grande:45,carga:60}},
+  {nome:'Completa',     icone:'✨',precos:{moto:35,pequeno:60,medio:70,grande:90,carga:120}},
+  {nome:'Polimento',    icone:'💎',precos:{moto:0, pequeno:120,medio:140,grande:160,carga:0}},
+  {nome:'Higienização', icone:'🧹',precos:{moto:0, pequeno:150,medio:180,grande:200,carga:250}}
+]);
+var pagamentos=carregar('pagamentos',[{nome:'Dinheiro',icone:'💵'},{nome:'Pix',icone:'📱'},{nome:'Cartão',icone:'💳'}]);
+var historico=carregar('historico',[]);
+var fila=carregar('fila',[]);
+var conclDia=carregar('concluidos',[]);
+var lancamentos=carregar('lancamentos',[]);
+var totalHoje=carregar('total_hoje',0);
+var msgWpp=carregar('msg_wpp',{pronto:'Olá {nome}! ✅ Seu veículo ({veiculo}) está pronto. Obrigado! 🙏',agendado:'Olá {nome}! 👋 Agendamento confirmado. Serviço: {servico}. 🚗',lavando:'Olá {nome}! 🚿 Seu veículo ({veiculo}) está sendo lavado!'});
+
+var cliConf=null,veiSel=null,porteSel=null,cliDup=null;
+var lavSel=null,pagSel=null,funcsSel=[];
+var idxConc=null,idxEditar=null;
+var modoFuncModal='inicial';
+var idxEditCli=null,idxEditFunc=null,idxEditPag=null,idxEditLav=null;
+var veisForm=[];
+var filtroAtivo='data',histVis=10;
+
+var CORES=['#1256A0','#1D9E75','#BA7517','#DC2626','#7C3AED','#0891B2','#BE185D'];
+function corF(i){return CORES[i%CORES.length];}
+function corFNome(n){var i=funcionarios.findIndex(function(x){return x.nome===n;});return corF(i>=0?i:0);}
+
+// ══ DARK MODE ══
+function alternarDark(on){document.body.classList.toggle('dark',on);salvar('dark_mode',on);}
+(function(){var d=carregar('dark_mode',false);if(d){document.body.classList.add('dark');document.getElementById('toggle-dark').checked=true;}})();
+
+// ══ NAVEGAÇÃO ══
+function mudarPag(p,b){
+  document.querySelectorAll('.pagina').forEach(function(x){x.classList.remove('ativa');});
+  document.querySelectorAll('.nav-item').forEach(function(x){x.classList.remove('ativo');});
+  document.getElementById('pag-'+p).classList.add('ativa');b.classList.add('ativo');
+  if(p=='historico'){atualizarSelFunc();renderHist();}
+  if(p=='financeiro')renderFin();
+}
+function mudarSub(s,b){
+  document.querySelectorAll('.sub-pag').forEach(function(x){x.classList.remove('ativa');});
+  document.querySelectorAll('.sub-tab').forEach(function(x){x.classList.remove('ativo');});
+  document.getElementById('sub-'+s).classList.add('ativa');b.classList.add('ativo');
+}
+
+// ══ MENU / WPP ══
+function abrirMenu(){document.getElementById('modal-menu').classList.add('aberto');}
+function fecharMenu(){document.getElementById('modal-menu').classList.remove('aberto');}
+function abrirMsgWpp(){document.getElementById('msg-pronto').value=msgWpp.pronto;document.getElementById('msg-agendado').value=msgWpp.agendado;document.getElementById('msg-lavando').value=msgWpp.lavando;document.getElementById('modal-wpp').classList.add('aberto');}
+function fecharMsgWpp(){document.getElementById('modal-wpp').classList.remove('aberto');}
+function salvarMsgWpp(){msgWpp.pronto=document.getElementById('msg-pronto').value.trim()||msgWpp.pronto;msgWpp.agendado=document.getElementById('msg-agendado').value.trim()||msgWpp.agendado;msgWpp.lavando=document.getElementById('msg-lavando').value.trim()||msgWpp.lavando;salvar('msg_wpp',msgWpp);fecharMsgWpp();msg('av-lav','er-lav','✅ Mensagens salvas!');}
+function montarMsg(tpl,d){return tpl.replace(/{nome}/g,d.nome||'').replace(/{veiculo}/g,d.vei||'').replace(/{servico}/g,d.serv||'');}
+
+// ══ BUSCA LAVAGEM ══
+function buscarLav(){
+  var v=document.getElementById('busca-lav').value.toLowerCase(),c=document.getElementById('sug-lav');
+  if(v.length<2){c.style.display='none';return;}
+  var found=clientes.filter(function(x){return x.nome.toLowerCase().includes(v);});
+  c.innerHTML='';
+  if(!found.length){var d=document.createElement('div');d.className='sugestao-item';d.style.color='var(--vermelho)';d.style.cursor='default';d.innerHTML='❌ Não encontrado. <span style="color:var(--azul);cursor:pointer;text-decoration:underline;" onclick="irCad()">Cadastrar</span>';c.appendChild(d);c.style.display='block';return;}
+  found.forEach(function(cl){var d=document.createElement('div');d.className='sugestao-item';var vs=cl.veiculos.map(function(v){return v.tipo+' '+v.modelo;}).join(', ');d.innerHTML='<strong>'+cl.nome+'</strong><br><small style="color:var(--subtexto)">'+vs+'</small>';d.onclick=function(){c.style.display='none';document.getElementById('busca-lav').value=cl.nome;abrirVeri(cl);};c.appendChild(d);});
+  c.style.display='block';
+}
+function irCad(){document.querySelectorAll('.nav-item')[2].click();document.getElementById('sug-lav').style.display='none';document.getElementById('busca-lav').value='';}
+
+// ══ MODAL VERIFICAÇÃO ══
+function abrirVeri(cl){
+  cliConf=cl;veiSel=null;porteSel=null;
+  var btn=document.getElementById('btn-vei-ok');btn.disabled=true;btn.style.opacity='.45';
+  document.getElementById('mv-nome').textContent=cl.nome;document.getElementById('mv-tel').textContent=cl.tel;
+  var wrap=document.getElementById('mv-veiculos');wrap.innerHTML='';
+  cl.veiculos.forEach(function(v){var c=document.createElement('div');c.className='vei-card';c.innerHTML='<div class="vei-card-icone">'+v.tipo+'</div><div class="vei-card-info"><div class="vei-card-nome">'+v.modelo+'</div><div class="vei-card-placa">'+v.placa+'</div></div><div class="vei-check">✓</div>';c.onclick=function(){wrap.querySelectorAll('.vei-card').forEach(function(x){x.classList.remove('sel');});c.classList.add('sel');veiSel=v;btn.disabled=false;btn.style.opacity='1';};wrap.appendChild(c);});
+  document.getElementById('modal-veri').classList.add('aberto');
+}
+function fecharVeri(){cliConf=null;veiSel=null;porteSel=null;document.getElementById('modal-veri').classList.remove('aberto');document.getElementById('busca-lav').value='';document.getElementById('sug-lav').style.display='none';}
+function irEditarCliente(){var cl=cliConf;fecharVeri();document.querySelectorAll('.nav-item')[2].click();document.querySelectorAll('.sub-tab')[0].click();var idx=clientes.findIndex(function(x){return x.nome===cl.nome;});if(idx!==-1)setTimeout(function(){editCli(idx);},100);}
+
+// ══ MODAL PORTE ══
+function abrirModalPorte(){
+  document.getElementById('modal-veri').classList.remove('aberto');
+  porteSel=null;
+  var btn=document.getElementById('btn-porte-ok');btn.disabled=true;btn.style.opacity='.45';
+  document.getElementById('mp-vei').textContent=veiSel.tipo+' '+veiSel.modelo;
+  // reset seleção
+  document.querySelectorAll('.porte-card').forEach(function(c){c.classList.remove('sel');});
+  document.getElementById('modal-porte').classList.add('aberto');
+}
+function fecharModalPorte(){porteSel=null;document.getElementById('modal-porte').classList.remove('aberto');}
+function selecionarPorte(card,porte){
+  document.querySelectorAll('.porte-card').forEach(function(c){c.classList.remove('sel');});
+  card.classList.add('sel');porteSel=porte;
+  var btn=document.getElementById('btn-porte-ok');btn.disabled=false;btn.style.opacity='1';
+}
+
+// ══ MODAL LAVAGEM (filtrado por porte) ══
+function abrirModalLavagem(){
+  document.getElementById('modal-porte').classList.remove('aberto');
+  lavSel=null;
+  var btn=document.getElementById('btn-lav-ok');btn.disabled=true;btn.style.opacity='.45';
+  var p=PORTES[porteSel];
+  document.getElementById('ml-cli').textContent=cliConf.nome;
+  document.getElementById('ml-porte-badge').innerHTML='<span class="badge badge-azul">'+p.icone+' '+p.label+'</span>';
+  var g=document.getElementById('grid-lavs');g.innerHTML='';
+  var algum=false;
+  lavagens.forEach(function(lav){
+    var preco=lav.precos?lav.precos[porteSel]:0;
+    if(!preco||preco==0){return;} // não mostra se preço 0 para este porte
+    algum=true;
+    var c=document.createElement('div');c.className='lav-card';
+    c.innerHTML='<div class="lav-icone">'+lav.icone+'</div><div class="lav-nome">'+lav.nome+'</div><div class="lav-preco">R$ '+preco+'</div>';
+    c.onclick=function(){document.querySelectorAll('.lav-card').forEach(function(x){x.classList.remove('sel');});c.classList.add('sel');lavSel={nome:lav.nome,preco:preco,icone:lav.icone};btn.disabled=false;btn.style.opacity='1';};
+    g.appendChild(c);
+  });
+  if(!algum){g.innerHTML='<p style="color:var(--subtexto);font-size:13px;grid-column:span 2;">Nenhuma lavagem cadastrada para este porte.<br>Configure os preços em Cadastros → Lavagens.</p>';}
+  document.getElementById('modal-lav').classList.add('aberto');
+}
+function fecharModalLav(){lavSel=null;cliConf=null;veiSel=null;porteSel=null;document.getElementById('modal-lav').classList.remove('aberto');document.getElementById('busca-lav').value='';}
+
+// ══ MODAL FUNCIONÁRIOS ══
+function abrirModalFuncionarios(soFunc){
+  modoFuncModal=soFunc?'soFunc':'inicial';funcsSel=[];
+  if(soFunc&&idxEditar!==null)funcsSel=(fila[idxEditar].funcionarios||[]).slice();
+  document.getElementById('mf-titulo').textContent=soFunc?'👷 Mudar funcionários':'👷 Selecionar funcionários';
+  document.getElementById('btn-sem-func').style.display=soFunc?'none':'block';
+  var lista=document.getElementById('mf-lista');lista.innerHTML='';
+  if(!funcionarios.length){lista.innerHTML='<p style="color:var(--subtexto);font-size:13px;margin-bottom:12px;">Nenhum funcionário cadastrado.</p>';}
+  funcionarios.forEach(function(f,fi){
+    var cor=corF(fi);
+    var card=document.createElement('div');card.className='func-card'+(funcsSel.includes(f.nome)?' sel':'');
+    var comissaoInfo=f.usaComissao?(f.comissoes[(lavSel&&lavSel.nome)||(fila[idxEditar]&&fila[idxEditar].serv)||'']||0):null;
+    var subTxt=f.cargo+(comissaoInfo!==null?' · 💰 R$ '+comissaoInfo+'/serv.':'');
+    card.innerHTML='<div class="func-avatar" style="background:'+cor+';">'+f.nome.charAt(0)+'</div><div class="func-info"><div class="func-nome">'+f.nome+'</div><div class="func-sub">'+subTxt+'</div></div><div class="func-check">'+(funcsSel.includes(f.nome)?'✓':'')+'</div>';
+    card.onclick=function(){if(funcsSel.includes(f.nome)){funcsSel=funcsSel.filter(function(n){return n!==f.nome;});card.classList.remove('sel');}else{funcsSel.push(f.nome);card.classList.add('sel');}card.querySelector('.func-check').textContent=funcsSel.includes(f.nome)?'✓':'';atualizarSelFuncLabel();};
+    lista.appendChild(card);
+  });
+  atualizarSelFuncLabel();
+  document.getElementById('modal-lav').classList.remove('aberto');
+  document.getElementById('modal-func').classList.add('aberto');
+}
+function atualizarSelFuncLabel(){document.getElementById('mf-sel').textContent=funcsSel.length?'✓ Selecionados: '+funcsSel.join(', '):'Nenhum selecionado';}
+function fecharModalFunc(){funcsSel=[];document.getElementById('modal-func').classList.remove('aberto');}
+function confirmarFuncionarios(){
+  document.getElementById('modal-func').classList.remove('aberto');
+  if(modoFuncModal==='soFunc'&&idxEditar!==null){fila[idxEditar].funcionarios=funcsSel.slice();salvar('fila',fila);renderFila();msg('av-lav','er-lav','👷 Funcionários atualizados!');idxEditar=null;funcsSel=[];return;}
+  adicionarAFila(funcsSel.slice());
+}
+function confirmarSemFunc(){document.getElementById('modal-func').classList.remove('aberto');adicionarAFila([]);}
+function adicionarAFila(funcs){
+  if(!cliConf||!lavSel||!veiSel||!porteSel)return;
+  var jaFila=fila.some(function(x){return x.status!='pronto'&&x.nome==cliConf.nome&&x.placa==veiSel.placa;});
+  if(jaFila){msg('er-lav','av-lav','⚠️ '+cliConf.nome+' já está na fila com este veículo!');document.getElementById('busca-lav').value='';cliConf=null;lavSel=null;veiSel=null;porteSel=null;return;}
+  var agora=new Date(),hora=String(agora.getHours()).padStart(2,'0')+':'+String(agora.getMinutes()).padStart(2,'0');
+  fila.push({nome:cliConf.nome,tel:cliConf.tel,vei:veiSel.tipo+' '+veiSel.modelo,placa:veiSel.placa,serv:lavSel.nome,preco:lavSel.preco,porte:porteSel,status:'aguardando',hora:hora,funcionarios:funcs});
+  salvar('fila',fila);document.getElementById('busca-lav').value='';cliConf=null;lavSel=null;veiSel=null;porteSel=null;funcsSel=[];
+  renderFila();msg('av-lav','er-lav','✅ Cliente adicionado à fila!');
+}
+
+// ══ MODAL EDITAR ══
+function abrirEditar(i){idxEditar=i;document.getElementById('me-cli').textContent=fila[i].nome+' · '+fila[i].vei;document.getElementById('modal-editar').classList.add('aberto');}
+function fecharEditar(){idxEditar=null;document.getElementById('modal-editar').classList.remove('aberto');}
+function editarLavagem(){
+  var c=fila[idxEditar];
+  cliConf=clientes.find(function(x){return x.nome===c.nome;})||{nome:c.nome,tel:c.tel,veiculos:[{modelo:c.vei,placa:c.placa,tipo:'🚗'}]};
+  veiSel={modelo:c.vei,placa:c.placa,tipo:'🚗'};
+  fila.splice(idxEditar,1);salvar('fila',fila);renderFila();fecharEditar();
+  // vai para seleção de porte
+  porteSel=null;
+  var btn=document.getElementById('btn-porte-ok');btn.disabled=true;btn.style.opacity='.45';
+  document.getElementById('mp-vei').textContent=veiSel.tipo+' '+veiSel.modelo;
+  document.querySelectorAll('.porte-card').forEach(function(c){c.classList.remove('sel');});
+  document.getElementById('modal-porte').classList.add('aberto');
+}
+function editarFuncionarios(){
+  var idx=idxEditar;
+  document.getElementById('modal-editar').classList.remove('aberto');
+  idxEditar=idx;
+  lavSel={nome:fila[idx].serv,preco:fila[idx].preco};
+  abrirModalFuncionarios(true);
+}
+
+// ══ MODAL CONCLUSÃO ══
+function abrirModalConc(i){
+  idxConc=i;pagSel=null;
+  var btn=document.getElementById('btn-conc-ok');btn.disabled=true;btn.style.opacity='.45';
+  document.getElementById('mc-cli').textContent=fila[i].nome+' · '+fila[i].vei;
+  var g=document.getElementById('pag-grid');g.innerHTML='';
+  pagamentos.forEach(function(p){var b=document.createElement('button');b.className='pag-btn';b.textContent=p.icone+' '+p.nome;b.onclick=function(){g.querySelectorAll('.pag-btn').forEach(function(x){x.classList.remove('sel');});b.classList.add('sel');pagSel=p;btn.disabled=false;btn.style.opacity='1';};g.appendChild(b);});
+  document.getElementById('modal-conc').classList.add('aberto');
+}
+function fecharModalConc(){idxConc=null;pagSel=null;document.getElementById('modal-conc').classList.remove('aberto');}
+function confirmarConclusao(){
+  if(idxConc===null||!pagSel)return;
+  document.getElementById('modal-conc').classList.remove('aberto');
+  fila[idxConc].status='pronto';totalHoje++;
+  var c=fila[idxConc],agora=new Date();
+  var hora=String(agora.getHours()).padStart(2,'0')+':'+String(agora.getMinutes()).padStart(2,'0');
+  var comissoes={};
+  (c.funcionarios||[]).forEach(function(nome){var f=funcionarios.find(function(x){return x.nome===nome;});if(f&&f.usaComissao)comissoes[nome]=f.comissoes[c.serv]||0;});
+  var reg={nome:c.nome,vei:c.vei,placa:c.placa,serv:c.serv,preco:c.preco,porte:c.porte||'',pag:pagSel.nome,funcionarios:c.funcionarios||[],comissoes:comissoes,hora:hora,data:FMT,iso:ISO};
+  historico.unshift(reg);
+  conclDia.unshift({nome:c.nome,tel:c.tel,vei:c.vei,placa:c.placa,serv:c.serv,preco:c.preco,porte:c.porte||'',pag:pagSel.nome,funcionarios:c.funcionarios||[],comissoes:comissoes,hora:hora});
+  lancamentos.unshift({tipo:'receita',desc:c.serv+' — '+c.nome,val:c.preco,porte:c.porte||'',pag:pagSel.nome,funcionarios:c.funcionarios||[],comissoes:comissoes,hora:hora});
+  salvar('fila',fila);salvar('historico',historico);salvar('concluidos',conclDia);salvar('lancamentos',lancamentos);salvar('total_hoje',totalHoje);
+  idxConc=null;pagSel=null;renderFila();renderFin();msg('av-lav','er-lav','✅ Lavagem de '+c.nome+' concluída!');
+}
+
+// ══ FILA ══
+function renderFila(){
+  var lA=document.getElementById('lista-agu'),lL=document.getElementById('lista-lav'),lC=document.getElementById('lista-conc'),sC=document.getElementById('sec-conc');
+  lA.innerHTML='';lL.innerHTML='';lC.innerHTML='';
+  var agu=fila.filter(function(x){return x.status=='aguardando';}),lav=fila.filter(function(x){return x.status=='lavando';});
+  document.getElementById('hero-total').textContent=totalHoje;
+  document.getElementById('hero-agu').textContent=agu.length;
+  document.getElementById('hero-lav').textContent=lav.length;
+  document.getElementById('hero-prt').textContent=totalHoje;
+  document.getElementById('cnt-agu').textContent=agu.length;
+  document.getElementById('cnt-lav').textContent=lav.length;
+
+  if(!agu.length)lA.innerHTML='<div style="text-align:center;padding:14px;color:var(--subtexto);font-size:13px;">Nenhum cliente aguardando.</div>';
+  fila.forEach(function(c,i){
+    if(c.status!=='aguardando')return;
+    var porteBadge=c.porte?'<span class="badge badge-cinza">'+PORTES[c.porte].icone+' '+PORTES[c.porte].label+'</span>':'';
+    var funcTag=montarFuncTags(c.funcionarios);
+    var card=document.createElement('div');card.className='cliente-card';card.style.borderLeftColor='var(--amber)';
+    card.innerHTML=
+      '<div class="cliente-card-header"><div class="cliente-avatar">'+c.nome.charAt(0)+'</div><div class="cliente-info"><div class="cliente-nome">'+c.nome+'</div><div class="cliente-sub">'+c.vei+' · '+c.placa+'</div></div><span class="badge badge-amber">⏳</span></div>'+
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;font-size:13px;color:var(--subtexto);margin-bottom:8px;">'+porteBadge+'<span>🧼 '+c.serv+'</span><span style="color:var(--verde);font-weight:700;">R$ '+c.preco+'</span><span>🕐 '+c.hora+'</span>'+funcTag+'</div>'+
+      '<div style="display:flex;gap:6px;padding-top:8px;border-top:1px solid var(--borda);">'+
+        '<button class="btn btn-primario btn-sm" style="flex:1;" onclick="iniciarLavagem('+i+')">🚿 Iniciar</button>'+
+        '<button class="btn btn-cinza btn-sm"   style="flex:1;" onclick="abrirEditar('+i+')">✏️ Editar</button>'+
+        '<button class="btn btn-verm btn-sm"    onclick="cancelarFila('+i+')">✕</button>'+
+      '</div>';
+    lA.appendChild(card);
+  });
+
+  if(!lav.length)lL.innerHTML='<div style="text-align:center;padding:14px;color:var(--subtexto);font-size:13px;">Nenhum veículo em lavagem.</div>';
+  fila.forEach(function(c,i){
+    if(c.status!=='lavando')return;
+    var porteBadge=c.porte?'<span class="badge badge-cinza">'+PORTES[c.porte].icone+' '+PORTES[c.porte].label+'</span>':'';
+    var funcTag=montarFuncTags(c.funcionarios);
+    var card=document.createElement('div');card.className='cliente-card';card.style.borderLeftColor='var(--azul-claro)';
+    card.innerHTML=
+      '<div class="cliente-card-header"><div class="cliente-avatar">'+c.nome.charAt(0)+'</div><div class="cliente-info"><div class="cliente-nome">'+c.nome+'</div><div class="cliente-sub">'+c.vei+' · '+c.placa+'</div></div><span class="badge badge-azul">🚿</span></div>'+
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;font-size:13px;color:var(--subtexto);margin-bottom:8px;">'+porteBadge+'<span>🧼 '+c.serv+'</span><span style="color:var(--verde);font-weight:700;">R$ '+c.preco+'</span><span>🕐 '+c.hora+'</span>'+funcTag+'</div>'+
+      '<div style="display:flex;gap:6px;padding-top:8px;border-top:1px solid var(--borda);">'+
+        '<button class="btn btn-verde btn-sm" style="flex:1;" onclick="abrirModalConc('+i+')">✅ Concluída</button>'+
+        '<button class="btn btn-cinza btn-sm" style="flex:1;" onclick="abrirEditar('+i+')">✏️ Editar</button>'+
+        '<button class="btn btn-verm btn-sm"  onclick="cancelarFila('+i+')">✕</button>'+
+      '</div>';
+    lL.appendChild(card);
+  });
+
+  if(!conclDia.length){sC.style.display='none';return;}
+  sC.style.display='block';
+  document.getElementById('cnt-conc').textContent=conclDia.length;
+  conclDia.forEach(function(c){
+    var tel=c.tel.replace(/\D/g,'');
+    var link='https://wa.me/55'+tel+'?text='+encodeURIComponent(montarMsg(msgWpp.pronto,c));
+    var porteBadge=c.porte?'<span class="badge badge-cinza">'+PORTES[c.porte].icone+' '+PORTES[c.porte].label+'</span>':'';
+    var funcTag=montarFuncTags(c.funcionarios);
+    var card=document.createElement('div');card.className='concluido-card';
+    card.innerHTML=
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><span style="font-size:15px;font-weight:700;">'+c.nome+'</span><span style="font-size:12px;color:var(--subtexto);">⏰ '+c.hora+'</span></div>'+
+      '<div style="font-size:13px;color:var(--subtexto);margin-bottom:4px;">'+c.vei+' · '+c.placa+'</div>'+
+      '<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:6px;">'+porteBadge+'<span>🧼 '+c.serv+'</span><span style="color:var(--verde);font-weight:700;">R$ '+c.preco+'</span><span class="badge badge-verde">'+c.pag+'</span>'+funcTag+'</div>'+
+      '<a href="'+link+'" target="_blank" class="btn btn-wpp btn-sm" style="text-decoration:none;">📲 WhatsApp</a>';
+    lC.appendChild(card);
+  });
+}
+function montarFuncTags(funcs){if(!funcs||!funcs.length)return '';return funcs.map(function(n){return'<span class="badge badge-roxo">👷 '+n+'</span>';}).join(' ');}
+function iniciarLavagem(i){fila[i].status='lavando';salvar('fila',fila);renderFila();msg('av-lav','er-lav','🚿 Lavagem de '+fila[i].nome+' iniciada!');}
+function cancelarFila(i){if(confirm('Cancelar a lavagem de '+fila[i].nome+'?')){fila.splice(i,1);salvar('fila',fila);renderFila();msg('av-lav','er-lav','🗑️ Lavagem cancelada.');}}
+
+// ══ FINANCEIRO ══
+function regDespesa(){
+  var desc=document.getElementById('d-desc').value.trim(),val=parseFloat(document.getElementById('d-val').value),cat=document.getElementById('d-cat').value;
+  if(!desc||isNaN(val)||val<=0){alert('Preencha descrição e valor!');return;}
+  var hora=new Date();hora=String(hora.getHours()).padStart(2,'0')+':'+String(hora.getMinutes()).padStart(2,'0');
+  lancamentos.unshift({tipo:'despesa',desc:desc+' ('+cat+')',val:val,porte:'',pag:'',funcionarios:[],comissoes:{},hora:hora});
+  salvar('lancamentos',lancamentos);document.getElementById('d-desc').value='';document.getElementById('d-val').value='';
+  renderFin();msg('av-lav','er-lav','✅ Despesa registrada!');
+}
+function renderFin(){
+  var rec=0,desp=0,qtd=0,pS={},pP={},pF={},pPorte={};
+  lancamentos.forEach(function(l){
+    if(l.tipo=='receita'){
+      rec+=l.val;qtd++;
+      var s=l.desc.split(' — ')[0];pS[s]=(pS[s]||0)+l.val;pP[l.pag]=(pP[l.pag]||0)+l.val;
+      if(l.porte){var pk=PORTES[l.porte]?PORTES[l.porte].icone+' '+PORTES[l.porte].label:l.porte;pPorte[pk]=(pPorte[pk]||{qtd:0,val:0});pPorte[pk].qtd++;pPorte[pk].val+=l.val;}
+      (l.funcionarios||[]).forEach(function(n){if(!pF[n])pF[n]={qtd:0,val:0,com:0};pF[n].qtd++;pF[n].val+=l.val;pF[n].com+=(l.comissoes&&l.comissoes[n]?Number(l.comissoes[n]):0);});
+    } else{desp+=l.val;}
+  });
+  var tkt=qtd>0?(rec/qtd).toFixed(0):0;
+  document.getElementById('fin-rec').textContent='R$ '+rec.toFixed(0);
+  document.getElementById('fin-qtd').textContent=qtd;
+  document.getElementById('fin-tkt').textContent='R$ '+tkt;
+  document.getElementById('fin-desp').textContent='R$ '+desp.toFixed(0);
+
+  // Por porte
+  var gPorte=document.getElementById('graf-porte');gPorte.innerHTML='';
+  var pkKeys=Object.keys(pPorte);
+  if(!pkKeys.length){gPorte.innerHTML='<p style="color:var(--subtexto);font-size:13px;">Nenhum serviço registrado ainda.</p>';}
+  else{
+    var maxPorte=Math.max.apply(null,pkKeys.map(function(k){return pPorte[k].val;}));
+    pkKeys.forEach(function(k){var pct=Math.round((pPorte[k].val/maxPorte)*100);gPorte.innerHTML+='<div class="barra-item"><div class="barra-label"><span>'+k+' ('+pPorte[k].qtd+'x)</span><span>R$ '+pPorte[k].val+'</span></div><div class="barra-fundo"><div class="barra-fill barra-azul" style="width:'+pct+'%"></div></div></div>';});
+  }
+
+  // Ranking
+  var rk=document.getElementById('ranking-func');rk.innerHTML='';
+  var arr=Object.keys(pF).map(function(n){return{nome:n,qtd:pF[n].qtd,val:pF[n].val,com:pF[n].com};}).sort(function(a,b){return b.qtd-a.qtd;});
+  if(!arr.length){rk.innerHTML='<p style="color:var(--subtexto);font-size:13px;">Nenhum serviço atribuído ainda.</p>';}
+  arr.forEach(function(f,i){var cor=corFNome(f.nome);var posNum=i==0?'🥇':i==1?'🥈':i==2?'🥉':'#'+(i+1);var posClass=i==0?'top1':i==1?'top2':i==2?'top3':'';var comTxt=f.com>0?'<div class="ranking-comissao">💰 R$ '+f.com.toFixed(2)+'</div>':'';rk.innerHTML+='<div class="ranking-item"><div class="ranking-pos '+posClass+'">'+posNum+'</div><div class="ranking-avatar" style="background:'+cor+';">'+f.nome.charAt(0)+'</div><div class="ranking-info"><div class="ranking-nome">'+f.nome+'</div><div class="ranking-sub">R$ '+f.val.toFixed(0)+' gerado</div></div><div class="ranking-right"><div class="ranking-qtd">'+f.qtd+'</div>'+comTxt+'</div></div>';});
+  var semA=lancamentos.filter(function(l){return l.tipo=='receita'&&(!l.funcionarios||!l.funcionarios.length);}).length;
+  if(semA>0)rk.innerHTML+='<div class="ranking-item"><div class="ranking-pos">—</div><div class="ranking-avatar" style="background:#9CA3AF;">?</div><div class="ranking-info"><div class="ranking-nome">Sem atribuição</div></div><div class="ranking-right"><div class="ranking-qtd" style="color:var(--subtexto);">'+semA+'</div></div></div>';
+
+  var C2=['barra-azul','barra-verde','barra-amber','barra-roxo'];
+  function graf(el,obj){el.innerHTML='';var ks=Object.keys(obj);if(!ks.length){el.innerHTML='<p style="color:var(--subtexto);font-size:13px;">Nenhum dado ainda.</p>';return;}var mx=Math.max.apply(null,ks.map(function(k){return obj[k];}));ks.forEach(function(k,i){var pct=Math.round((obj[k]/mx)*100);el.innerHTML+='<div class="barra-item"><div class="barra-label"><span>'+k+'</span><span>R$ '+obj[k]+'</span></div><div class="barra-fundo"><div class="barra-fill '+(C2[i%4])+'" style="width:'+pct+'%"></div></div></div>';});}
+  graf(document.getElementById('graf-serv'),pS);
+  graf(document.getElementById('graf-pag'),pP);
+
+  var ll=document.getElementById('lista-lanc');ll.innerHTML='';
+  if(!lancamentos.length){ll.innerHTML='<p style="color:var(--subtexto);font-size:13px;">Nenhum lançamento.</p>';return;}
+  lancamentos.forEach(function(l){var rec=l.tipo=='receita';var porteTxt=l.porte&&PORTES[l.porte]?' · '+PORTES[l.porte].icone+' '+PORTES[l.porte].label:'';var fTag=(l.funcionarios&&l.funcionarios.length)?' · 👷 '+l.funcionarios.join(', '):'';ll.innerHTML+='<div class="linha-fin"><div class="linha-fin-icone '+(rec?'ic-verde':'ic-verm')+'">'+(rec?'💰':'💸')+'</div><div class="linha-fin-info"><div class="linha-fin-nome">'+l.desc+'</div><div class="linha-fin-sub">⏰ '+l.hora+(l.pag?' · '+l.pag:'')+porteTxt+fTag+'</div></div><div class="linha-fin-val" style="color:'+(rec?'var(--verde)':'var(--vermelho)')+'">'+(rec?'+':'-')+'R$ '+l.val.toFixed(0)+'</div></div>';});
+}
+
+// ══ CADASTRO LAVAGENS com preços por porte ══
+function getPrecoPorteForm(){return{moto:Number(document.getElementById('pp-moto').value)||0,pequeno:Number(document.getElementById('pp-pequeno').value)||0,medio:Number(document.getElementById('pp-medio').value)||0,grande:Number(document.getElementById('pp-grande').value)||0,carga:Number(document.getElementById('pp-carga').value)||0};}
+function setPrecoPorteForm(precos){var p=precos||{};document.getElementById('pp-moto').value=p.moto||'';document.getElementById('pp-pequeno').value=p.pequeno||'';document.getElementById('pp-medio').value=p.medio||'';document.getElementById('pp-grande').value=p.grande||'';document.getElementById('pp-carga').value=p.carga||'';}
+function limparPrecoPorteForm(){['pp-moto','pp-pequeno','pp-medio','pp-grande','pp-carga'].forEach(function(id){document.getElementById(id).value='';});}
+
+function salvarLavagem(){
+  var nome=document.getElementById('l-nome').value.trim(),icone=document.getElementById('l-icone').value.trim();
+  var precos=getPrecoPorteForm();
+  if(!nome){msg('er-lc','av-lc','⚠️ Preencha o nome!');return;}
+  if(idxEditLav!==null){
+    lavagens[idxEditLav]={nome,icone:icone||'🚗',precos};
+    idxEditLav=null;document.getElementById('tit-lav').textContent='Nova lavagem';document.getElementById('btn-salvar-lav').textContent='Cadastrar lavagem';document.getElementById('btn-cancel-lav').style.display='none';
+    msg('av-lc','er-lc','✅ Lavagem "'+nome+'" atualizada!');
+  } else {
+    lavagens.push({nome,icone:icone||'🚗',precos});
+    msg('av-lc','er-lc','✅ Lavagem "'+nome+'" cadastrada!');
+  }
+  salvar('lavagens',lavagens);document.getElementById('l-nome').value='';document.getElementById('l-icone').value='';limparPrecoPorteForm();renderLavs();
+}
+function editLav(i){
+  var l=lavagens[i];idxEditLav=i;
+  document.getElementById('l-nome').value=l.nome;document.getElementById('l-icone').value=l.icone;
+  setPrecoPorteForm(l.precos||{});
+  document.getElementById('tit-lav').textContent='✏️ Editar lavagem';document.getElementById('btn-salvar-lav').textContent='Salvar alterações';document.getElementById('btn-cancel-lav').style.display='block';
+  document.getElementById('l-nome').scrollIntoView({behavior:'smooth',block:'center'});
+  msg('av-lc','er-lc','✏️ Edite e clique em "Salvar alterações".');
+}
+function cancelarLav(){idxEditLav=null;document.getElementById('l-nome').value='';document.getElementById('l-icone').value='';limparPrecoPorteForm();document.getElementById('tit-lav').textContent='Nova lavagem';document.getElementById('btn-salvar-lav').textContent='Cadastrar lavagem';document.getElementById('btn-cancel-lav').style.display='none';}
+function renderLavs(){
+  var l=document.getElementById('lista-lavs');l.innerHTML='';
+  if(!lavagens.length){l.innerHTML='<p style="color:var(--subtexto);font-size:13px;">Nenhuma lavagem.</p>';return;}
+  lavagens.forEach(function(lv,i){
+    var precoStr=Object.keys(PORTES).filter(function(p){return lv.precos&&lv.precos[p]>0;}).map(function(p){return PORTES[p].icone+' R$'+lv.precos[p];}).join(' · ');
+    var d=document.createElement('div');d.className='lista-item';
+    d.innerHTML='<div class="lista-item-info"><div class="lista-item-nome">'+lv.icone+' '+lv.nome+'</div><div class="lista-item-sub" style="margin-top:4px;">'+precoStr+'</div></div><div class="lista-item-acoes"><button class="lista-item-btn btn-edit" onclick="editLav('+i+')">✏️</button><button class="lista-item-btn btn-del" onclick="delLav('+i+')">🗑️</button></div>';
+    l.appendChild(d);
+  });
+}
+function delLav(i){if(confirm('Remover "'+lavagens[i].nome+'"?')){if(idxEditLav===i)cancelarLav();lavagens.splice(i,1);salvar('lavagens',lavagens);renderLavs();}}
+
+// ══ CADASTRO FUNCIONÁRIOS ══
+function toggleComissao(on){document.getElementById('fn-com-wrap').style.display=on?'block':'none';if(on)renderComGrid();}
+function renderComGrid(){var g=document.getElementById('fn-com-grid');g.innerHTML='';lavagens.forEach(function(lav){var d=document.createElement('div');d.className='comissao-item';d.innerHTML='<div class="comissao-icone">'+lav.icone+'</div><div class="comissao-info"><div class="comissao-nome">'+lav.nome+'</div><input class="comissao-input" type="number" placeholder="R$ 0,00" id="com-'+lav.nome.replace(/\s/g,'_')+'"></div>';g.appendChild(d);});}
+function getComissoes(){var o={};lavagens.forEach(function(lav){var el=document.getElementById('com-'+lav.nome.replace(/\s/g,'_'));if(el&&el.value)o[lav.nome]=Number(el.value);});return o;}
+function setComissoes(obj){lavagens.forEach(function(lav){var el=document.getElementById('com-'+lav.nome.replace(/\s/g,'_'));if(el)el.value=obj[lav.nome]||'';});}
+
+function salvarFuncionario(){
+  var nome=document.getElementById('fn-nome').value.trim(),cargo=document.getElementById('fn-cargo').value.trim(),tel=document.getElementById('fn-tel').value.trim();
+  var usaCom=document.getElementById('fn-usa-com').checked,comissoes=usaCom?getComissoes():{};
+  if(!nome){msg('er-func','av-func','⚠️ Preencha o nome!');return;}
+  if(idxEditFunc!==null){funcionarios[idxEditFunc]={nome,cargo:cargo||'Lavador',tel,usaComissao:usaCom,comissoes};idxEditFunc=null;document.getElementById('tit-func').textContent='Novo funcionário';document.getElementById('btn-salvar-func').textContent='Cadastrar funcionário';document.getElementById('btn-cancel-func').style.display='none';msg('av-func','er-func','✅ Funcionário atualizado!');}
+  else{if(funcionarios.some(function(x){return x.nome.toLowerCase()==nome.toLowerCase();})){msg('er-func','av-func','⚠️ Já existe um funcionário com esse nome!');return;}funcionarios.push({nome,cargo:cargo||'Lavador',tel,usaComissao:usaCom,comissoes});msg('av-func','er-func','✅ '+nome+' cadastrado!');}
+  salvar('funcionarios',funcionarios);['fn-nome','fn-cargo','fn-tel'].forEach(function(id){document.getElementById(id).value='';});document.getElementById('fn-usa-com').checked=false;document.getElementById('fn-com-wrap').style.display='none';renderFuncs();atualizarSelFunc();
+}
+function editFunc(i){var f=funcionarios[i];idxEditFunc=i;document.getElementById('fn-nome').value=f.nome;document.getElementById('fn-cargo').value=f.cargo;document.getElementById('fn-tel').value=f.tel||'';document.getElementById('fn-usa-com').checked=f.usaComissao;document.getElementById('fn-com-wrap').style.display=f.usaComissao?'block':'none';if(f.usaComissao){renderComGrid();setTimeout(function(){setComissoes(f.comissoes||{});},50);}document.getElementById('tit-func').textContent='✏️ Editar funcionário';document.getElementById('btn-salvar-func').textContent='Salvar alterações';document.getElementById('btn-cancel-func').style.display='block';document.getElementById('fn-nome').scrollIntoView({behavior:'smooth',block:'center'});msg('av-func','er-func','✏️ Edite e salve.');}
+function cancelarFunc(){idxEditFunc=null;['fn-nome','fn-cargo','fn-tel'].forEach(function(id){document.getElementById(id).value='';});document.getElementById('fn-usa-com').checked=false;document.getElementById('fn-com-wrap').style.display='none';document.getElementById('tit-func').textContent='Novo funcionário';document.getElementById('btn-salvar-func').textContent='Cadastrar funcionário';document.getElementById('btn-cancel-func').style.display='none';}
+function renderFuncs(){
+  var l=document.getElementById('lista-funcs');l.innerHTML='';
+  if(!funcionarios.length){l.innerHTML='<p style="color:var(--subtexto);font-size:13px;">Nenhum funcionário.</p>';return;}
+  funcionarios.forEach(function(f,i){var cor=corF(i);var comTag=f.usaComissao?'<span class="badge badge-verde" style="margin-top:4px;">💰 Com comissão</span>':'';var d=document.createElement('div');d.className='lista-item';d.innerHTML='<div style="display:flex;align-items:center;gap:10px;flex:1;"><div style="width:36px;height:36px;border-radius:50%;background:'+cor+';display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white;flex-shrink:0;">'+f.nome.charAt(0)+'</div><div class="lista-item-info"><div class="lista-item-nome">'+f.nome+'</div><div class="lista-item-sub">'+f.cargo+(f.tel?' · 📱 '+f.tel:'')+'</div>'+comTag+'</div></div><div class="lista-item-acoes"><button class="lista-item-btn btn-edit" onclick="editFunc('+i+')">✏️</button><button class="lista-item-btn btn-del" onclick="delFunc('+i+')">🗑️</button></div>';l.appendChild(d);});
+}
+function delFunc(i){if(confirm('Remover '+funcionarios[i].nome+'?')){if(idxEditFunc===i)cancelarFunc();funcionarios.splice(i,1);salvar('funcionarios',funcionarios);renderFuncs();atualizarSelFunc();}}
+function atualizarSelFunc(){var sel=document.getElementById('f-func');var v=sel.value;sel.innerHTML='<option value="">Todos os funcionários</option>';funcionarios.forEach(function(f){var o=document.createElement('option');o.value=f.nome;o.textContent=f.nome;sel.appendChild(o);});sel.value=v;}
+
+// ══ CADASTRO CLIENTES ══
+function addVei(){var m=document.getElementById('v-mod').value.trim(),p=document.getElementById('v-pla').value.trim(),t=document.getElementById('v-tipo').value;if(!m||!p){msg('er-cad','av-cad','⚠️ Preencha modelo e placa!');return;}veisForm.push({modelo:m,placa:p,tipo:t});document.getElementById('v-mod').value='';document.getElementById('v-pla').value='';renderVeis();}
+function rmVei(i){veisForm.splice(i,1);renderVeis();}
+function renderVeis(){var l=document.getElementById('vei-form');l.innerHTML='';veisForm.forEach(function(v,i){var d=document.createElement('div');d.style.cssText='display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--cinza-claro);border-radius:8px;margin-bottom:6px;';d.innerHTML='<span style="font-size:18px;">'+v.tipo+'</span><div style="flex:1;"><div style="font-size:13px;font-weight:600;">'+v.modelo+'</div><div style="font-size:11px;color:var(--subtexto);">'+v.placa+'</div></div><button onclick="rmVei('+i+')" style="background:var(--vermelho-bg);color:var(--vermelho);border:none;border-radius:6px;width:28px;height:28px;cursor:pointer;font-size:13px;">✕</button>';l.appendChild(d);});}
+function buscarCad(){var v=document.getElementById('c-nome').value.toLowerCase(),c=document.getElementById('sug-cad');if(v.length<2){c.style.display='none';return;}var found=clientes.filter(function(x){return x.nome.toLowerCase().includes(v);});if(!found.length){c.style.display='none';return;}c.innerHTML='';found.forEach(function(cl){var d=document.createElement('div');d.className='sugestao-item';d.textContent=cl.nome+' · '+cl.veiculos.length+' veículo(s)';d.onclick=function(){c.style.display='none';cliDup=cl;document.getElementById('dup-texto').textContent='O cliente '+cl.nome+' já está cadastrado. Deseja adicionar novo veículo ou ir para a lavagem?';document.getElementById('modal-dup').classList.add('aberto');};c.appendChild(d);});c.style.display='block';}
+function respostaModal(op){fecharDup();if(op=='mesmo'){document.querySelectorAll('.nav-item')[0].click();abrirVeri(cliDup);}else{document.getElementById('c-nome').value=cliDup.nome;document.getElementById('c-tel').value=cliDup.tel;veisForm=JSON.parse(JSON.stringify(cliDup.veiculos));renderVeis();idxEditCli=clientes.indexOf(cliDup);document.getElementById('tit-cli').textContent='✏️ Adicionar veículo';document.getElementById('btn-salvar-cli').textContent='Salvar alterações';document.getElementById('btn-cancel-cli').style.display='block';msg('av-cad','er-cad','✏️ Adicione o veículo e salve.');document.getElementById('c-nome').scrollIntoView({behavior:'smooth',block:'center'});}}
+function fecharDup(){document.getElementById('modal-dup').classList.remove('aberto');}
+function salvarCliente(){var nome=document.getElementById('c-nome').value.trim(),tel=document.getElementById('c-tel').value.trim();if(!nome||!tel){msg('er-cad','av-cad','⚠️ Preencha nome e telefone!');return;}if(!veisForm.length){msg('er-cad','av-cad','⚠️ Adicione pelo menos um veículo!');return;}if(idxEditCli!==null){clientes[idxEditCli]={nome,tel,veiculos:JSON.parse(JSON.stringify(veisForm))};msg('av-cad','er-cad','✅ Cliente atualizado!');idxEditCli=null;document.getElementById('tit-cli').textContent='Novo cliente';document.getElementById('btn-salvar-cli').textContent='Cadastrar cliente';document.getElementById('btn-cancel-cli').style.display='none';}else{if(clientes.some(function(x){return x.nome.toLowerCase()==nome.toLowerCase();})){msg('er-cad','av-cad','⚠️ Já existe um cliente com esse nome!');return;}clientes.push({nome,tel,veiculos:JSON.parse(JSON.stringify(veisForm))});msg('av-cad','er-cad','✅ Cliente '+nome+' cadastrado!');}salvar('clientes',clientes);document.getElementById('c-nome').value='';document.getElementById('c-tel').value='';veisForm=[];renderVeis();renderClis();}
+function editCli(i){var c=clientes[i];idxEditCli=i;document.getElementById('c-nome').value=c.nome;document.getElementById('c-tel').value=c.tel;veisForm=JSON.parse(JSON.stringify(c.veiculos));renderVeis();document.getElementById('tit-cli').textContent='✏️ Editar cliente';document.getElementById('btn-salvar-cli').textContent='Salvar alterações';document.getElementById('btn-cancel-cli').style.display='block';document.getElementById('sug-cad').style.display='none';document.getElementById('c-nome').scrollIntoView({behavior:'smooth',block:'center'});msg('av-cad','er-cad','✏️ Edite e salve.');}
+function cancelarCli(){idxEditCli=null;document.getElementById('c-nome').value='';document.getElementById('c-tel').value='';veisForm=[];renderVeis();document.getElementById('tit-cli').textContent='Novo cliente';document.getElementById('btn-salvar-cli').textContent='Cadastrar cliente';document.getElementById('btn-cancel-cli').style.display='none';}
+function renderClis(){var l=document.getElementById('lista-clis');l.innerHTML='';if(!clientes.length){l.innerHTML='<p style="color:var(--subtexto);font-size:13px;">Nenhum cliente.</p>';return;}clientes.forEach(function(c,i){var vs=c.veiculos.map(function(v){return v.tipo+' '+v.modelo+' ('+v.placa+')';}).join(' · ');var d=document.createElement('div');d.className='lista-item';d.innerHTML='<div class="lista-item-info"><div class="lista-item-nome">'+c.nome+'</div><div class="lista-item-sub">📱 '+c.tel+'</div><div class="lista-item-sub" style="margin-top:4px;">'+vs+'</div></div><div class="lista-item-acoes"><button class="lista-item-btn btn-edit" onclick="editCli('+i+')">✏️</button><button class="lista-item-btn btn-del" onclick="delCli('+i+')">🗑️</button></div>';l.appendChild(d);});}
+function delCli(i){if(confirm('Remover '+clientes[i].nome+'?')){if(idxEditCli===i)cancelarCli();clientes.splice(i,1);salvar('clientes',clientes);renderClis();}}
+
+// ══ PAGAMENTOS ══
+function salvarPagamento(){var nome=document.getElementById('p-nome').value.trim(),icone=document.getElementById('p-icone').value.trim();if(!nome){msg('er-pc','av-pc','⚠️ Preencha o nome!');return;}if(idxEditPag!==null){pagamentos[idxEditPag]={nome,icone:icone||'💳'};idxEditPag=null;document.getElementById('tit-pag').textContent='Nova forma de pagamento';document.getElementById('btn-salvar-pag').textContent='Cadastrar pagamento';document.getElementById('btn-cancel-pag').style.display='none';msg('av-pc','er-pc','✅ Atualizado!');}else{pagamentos.push({nome,icone:icone||'💳'});msg('av-pc','er-pc','✅ Forma "'+nome+'" cadastrada!');}salvar('pagamentos',pagamentos);document.getElementById('p-nome').value='';document.getElementById('p-icone').value='';renderPags();}
+function editPag(i){var p=pagamentos[i];idxEditPag=i;document.getElementById('p-nome').value=p.nome;document.getElementById('p-icone').value=p.icone;document.getElementById('tit-pag').textContent='✏️ Editar pagamento';document.getElementById('btn-salvar-pag').textContent='Salvar alterações';document.getElementById('btn-cancel-pag').style.display='block';document.getElementById('p-nome').scrollIntoView({behavior:'smooth',block:'center'});msg('av-pc','er-pc','✏️ Edite e salve.');}
+function cancelarPag(){idxEditPag=null;document.getElementById('p-nome').value='';document.getElementById('p-icone').value='';document.getElementById('tit-pag').textContent='Nova forma de pagamento';document.getElementById('btn-salvar-pag').textContent='Cadastrar pagamento';document.getElementById('btn-cancel-pag').style.display='none';}
+function renderPags(){var l=document.getElementById('lista-pags');l.innerHTML='';if(!pagamentos.length){l.innerHTML='<p style="color:var(--subtexto);font-size:13px;">Nenhuma forma.</p>';return;}pagamentos.forEach(function(p,i){var d=document.createElement('div');d.className='lista-item';d.innerHTML='<div class="lista-item-info"><div class="lista-item-nome">'+p.icone+' '+p.nome+'</div></div><div class="lista-item-acoes"><button class="lista-item-btn btn-edit" onclick="editPag('+i+')">✏️</button><button class="lista-item-btn btn-del" onclick="delPag('+i+')">🗑️</button></div>';l.appendChild(d);});}
+function delPag(i){if(confirm('Remover "'+pagamentos[i].nome+'"?')){if(idxEditPag===i)cancelarPag();pagamentos.splice(i,1);salvar('pagamentos',pagamentos);renderPags();}}
+
+// ══ HISTÓRICO ══
+function trocarFiltro(btn,tipo){filtroAtivo=tipo;histVis=10;document.querySelectorAll('.filtro-tab').forEach(function(b){b.classList.remove('ativo');});btn.classList.add('ativo');document.getElementById('fw-data').style.display=tipo=='data'?'block':'none';document.getElementById('fw-nome').style.display=tipo=='nome'?'block':'none';document.getElementById('fw-func').style.display=tipo=='func'?'block':'none';document.getElementById('fw-porte').style.display=tipo=='porte'?'block':'none';renderHist();}
+function renderHist(){
+  var l=document.getElementById('lista-hist');l.innerHTML='';var fil=[];
+  if(filtroAtivo=='data'){var d=document.getElementById('f-data').value;if(!d){l.innerHTML='<div class="empty"><div class="empty-icone">📅</div><div class="empty-titulo">Selecione uma data</div></div>';return;}fil=historico.filter(function(h){return h.iso==d;});}
+  else if(filtroAtivo=='nome'){var n=document.getElementById('f-nome').value.toLowerCase().trim();if(n.length<2){l.innerHTML='<div class="empty"><div class="empty-icone">👤</div><div class="empty-titulo">Digite pelo menos 2 letras</div></div>';return;}fil=historico.filter(function(h){return h.nome.toLowerCase().includes(n);});}
+  else if(filtroAtivo=='func'){var fn=document.getElementById('f-func').value;fil=fn?historico.filter(function(h){return h.funcionarios&&h.funcionarios.includes(fn);}):historico;}
+  else{var fp=document.getElementById('f-porte').value;fil=fp?historico.filter(function(h){return h.porte==fp;}):historico;}
+  if(!fil.length){l.innerHTML='<div class="empty"><div class="empty-icone">🔍</div><div class="empty-titulo">Nenhum resultado</div><div class="empty-sub">Tente outros filtros</div></div>';return;}
+  fil.slice(0,histVis).forEach(function(h){
+    var porteBadge=h.porte&&PORTES[h.porte]?'<span class="badge badge-cinza">'+PORTES[h.porte].icone+' '+PORTES[h.porte].label+'</span> ':'';
+    var fTag=h.funcionarios&&h.funcionarios.length?'<div class="hist-sub">👷 '+h.funcionarios.join(', ')+'</div>':'';
+    var comTag='';if(h.comissoes){Object.keys(h.comissoes).forEach(function(n){if(h.comissoes[n]>0)comTag+='<span class="badge badge-verde" style="margin-top:4px;">💰 '+n+': R$ '+h.comissoes[n]+'</span> ';});}
+    var d=document.createElement('div');d.className='hist-item';
+    d.innerHTML='<div class="hist-avatar">✅</div><div class="hist-info"><div class="hist-nome">'+h.nome+'</div><div class="hist-sub">'+h.vei+' · '+h.placa+'</div><div class="hist-sub">'+porteBadge+'🧼 '+h.serv+' · <strong style="color:var(--verde)">R$ '+h.preco+'</strong></div><div class="hist-sub">💳 '+h.pag+' · ⏰ '+h.hora+' · 📅 '+h.data+'</div>'+fTag+'<div style="margin-top:4px;">'+comTag+'</div></div><span class="hist-data-badge">'+h.data+'</span>';
+    l.appendChild(d);
+  });
+  if(fil.length>histVis){var rest=fil.length-histVis;var btn=document.createElement('button');btn.className='btn btn-outline';btn.style.marginTop='8px';btn.textContent='📋 Ver mais '+rest+' registro(s)';btn.onclick=function(){histVis+=10;renderHist();};l.appendChild(btn);}
+}
+
+// ══ EXPORTAR / BACKUP ══
+function exportarPDF(){
+  fecharMenu();
+  var rec=0,desp=0,qtd=0,pF={},pPorte={};
+  lancamentos.forEach(function(l){if(l.tipo=='receita'){rec+=l.val;qtd++;if(l.porte){var pk=PORTES[l.porte]?PORTES[l.porte].icone+' '+PORTES[l.porte].label:l.porte;pPorte[pk]=(pPorte[pk]||{qtd:0,val:0});pPorte[pk].qtd++;pPorte[pk].val+=l.val;}(l.funcionarios||[]).forEach(function(n){if(!pF[n])pF[n]={qtd:0,com:0};pF[n].qtd++;pF[n].com+=(l.comissoes&&l.comissoes[n]?Number(l.comissoes[n]):0);});}else{desp+=l.val;}});
+  var porteHtml=Object.keys(pPorte).map(function(k){return'<tr><td>'+k+'</td><td style="text-align:center;">'+pPorte[k].qtd+'</td><td style="text-align:right;">R$ '+pPorte[k].val+'</td></tr>';}).join('');
+  var rankHtml=Object.keys(pF).sort(function(a,b){return pF[b].qtd-pF[a].qtd;}).map(function(n){return'<tr><td>'+n+'</td><td style="text-align:center;">'+pF[n].qtd+'</td><td style="text-align:right;color:#1D9E75;">'+(pF[n].com>0?'R$ '+pF[n].com.toFixed(2):'—')+'</td></tr>';}).join('');
+  var linhas=lancamentos.map(function(l){var porteTxt=l.porte&&PORTES[l.porte]?PORTES[l.porte].icone+' '+PORTES[l.porte].label:'—';return'<tr><td style="padding:5px 8px;">'+(l.tipo=='receita'?'💰':'💸')+' '+l.desc+'</td><td style="padding:5px 8px;text-align:center;">'+porteTxt+'</td><td style="padding:5px 8px;text-align:center;">'+l.hora+'</td><td style="padding:5px 8px;text-align:right;color:'+(l.tipo=='receita'?'#1D9E75':'#DC2626')+';font-weight:700;">'+(l.tipo=='receita'?'+':'-')+'R$ '+l.val.toFixed(2)+'</td></tr>';}).join('');
+  var html='<html><head><meta charset="UTF-8"><title>Relatório AquaJato</title><style>body{font-family:Arial,sans-serif;padding:30px;color:#111;}h1,h2{color:#1256A0;}table{width:100%;border-collapse:collapse;margin-bottom:20px;}th{background:#1256A0;color:white;padding:8px;text-align:left;}tr{border-bottom:1px solid #eee;}</style></head><body>'+
+    '<h1>🚗 AquaJato — Relatório do Dia</h1><p><strong>Data:</strong> '+FMT+'</p>'+
+    '<div style="display:flex;gap:16px;margin:16px 0;flex-wrap:wrap;">'+
+      '<div style="background:#E1F5EE;padding:14px 20px;border-radius:10px;"><div style="font-size:12px;">Receita</div><div style="font-size:22px;font-weight:700;color:#1D9E75;">R$ '+rec.toFixed(2)+'</div></div>'+
+      '<div style="background:#FEE2E2;padding:14px 20px;border-radius:10px;"><div style="font-size:12px;">Despesas</div><div style="font-size:22px;font-weight:700;color:#DC2626;">R$ '+desp.toFixed(2)+'</div></div>'+
+      '<div style="background:#E8F1FB;padding:14px 20px;border-radius:10px;"><div style="font-size:12px;">Lucro</div><div style="font-size:22px;font-weight:700;color:#1256A0;">R$ '+(rec-desp).toFixed(2)+'</div></div>'+
+      '<div style="background:#F3F4F6;padding:14px 20px;border-radius:10px;"><div style="font-size:12px;">Serviços</div><div style="font-size:22px;font-weight:700;">'+qtd+'</div></div>'+
+    '</div>'+
+    '<h2>📐 Por Porte</h2><table><tr><th>Porte</th><th style="text-align:center;">Qtd</th><th style="text-align:right;">Receita</th></tr>'+porteHtml+'</table>'+
+    '<h2>👷 Funcionários</h2><table><tr><th>Nome</th><th style="text-align:center;">Serviços</th><th style="text-align:right;">Comissão</th></tr>'+rankHtml+'</table>'+
+    '<h2>📋 Lançamentos</h2><table><tr><th>Descrição</th><th style="text-align:center;">Porte</th><th style="text-align:center;">Hora</th><th style="text-align:right;">Valor</th></tr>'+linhas+'</table>'+
+    '<p style="font-size:12px;color:#888;">Gerado pelo AquaJato em '+FMT+'</p></body></html>';
+  var jan=window.open('','_blank');jan.document.write(html);jan.document.close();setTimeout(function(){jan.print();},500);
+}
+function exportarCSV(){fecharMenu();if(!historico.length){alert('Nenhum dado no histórico ainda.');return;}var csv='\uFEFF'+'Nome,Veículo,Placa,Porte,Serviço,Valor,Pagamento,Funcionários,Comissões,Hora,Data\n'+historico.map(function(h){var porteTxt=h.porte&&PORTES[h.porte]?PORTES[h.porte].label:'';var com=h.comissoes?Object.keys(h.comissoes).filter(function(n){return h.comissoes[n]>0;}).map(function(n){return n+':R$'+h.comissoes[n];}).join('|'):'';return'"'+h.nome+'","'+h.vei+'","'+h.placa+'","'+porteTxt+'","'+h.serv+'","R$ '+h.preco+'","'+h.pag+'","'+(h.funcionarios||[]).join('|')+'","'+com+'","'+h.hora+'","'+h.data+'"';}).join('\n');var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='aquajato-'+ISO+'.csv';a.click();URL.revokeObjectURL(url);}
+function exportarBackup(){fecharMenu();var dados={versao:'1.2',data:ISO,clientes,funcionarios,lavagens,pagamentos,historico,msgWpp};var blob=new Blob([JSON.stringify(dados,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='aquajato-backup-'+ISO+'.json';a.click();URL.revokeObjectURL(url);}
+function importarBackup(){document.getElementById('input-backup').click();}
+function processarBackup(ev){var file=ev.target.files[0];if(!file)return;var r=new FileReader();r.onload=function(e){try{var d=JSON.parse(e.target.result);if(!d.clientes||!d.lavagens){alert('❌ Arquivo inválido!');return;}if(!confirm('Restaurar backup de '+(d.data||'?')+'?'))return;clientes=d.clientes||clientes;funcionarios=d.funcionarios||funcionarios;lavagens=d.lavagens||lavagens;pagamentos=d.pagamentos||pagamentos;historico=d.historico||historico;if(d.msgWpp)msgWpp=d.msgWpp;salvar('clientes',clientes);salvar('funcionarios',funcionarios);salvar('lavagens',lavagens);salvar('pagamentos',pagamentos);salvar('historico',historico);salvar('msg_wpp',msgWpp);renderClis();renderFuncs();renderLavs();renderPags();renderFila();renderHist();fecharMenu();msg('av-lav','er-lav','✅ Backup restaurado!');}catch(e){alert('❌ Erro ao ler o arquivo.');}};r.readAsText(file);ev.target.value='';}
+function resetarDia(){if(!confirm('Zerar a fila do dia?'))return;fila=[];conclDia=[];lancamentos=[];totalHoje=0;salvar('fila',fila);salvar('concluidos',conclDia);salvar('lancamentos',lancamentos);salvar('total_hoje',totalHoje);renderFila();renderFin();fecharMenu();msg('av-lav','er-lav','🔄 Fila do dia zerada!');}
+
+// ══ UTILS ══
+function msg(ok,err,txt){document.getElementById(err).style.display='none';var el=document.getElementById(ok);el.textContent=txt;el.style.display='block';setTimeout(function(){el.style.display='none';},4000);}
+
+// Init
+document.getElementById('f-data').value=ISO;
+renderFila();renderClis();renderFuncs();renderLavs();renderPags();renderFin();atualizarSelFunc();
+</script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js');}</script>
+</body>
+</html>
