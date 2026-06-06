@@ -1,4 +1,4 @@
-var CACHE = 'aquajato-v3';
+var CACHE = 'aquajato-v4';
 
 var arquivos = [
   './index.html',
